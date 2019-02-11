@@ -1,4 +1,18 @@
 ###################
+Features
+###################
+Accounts System
+Asset Management System
+Employee Attendence System
+Full Employee Recruitment Process
+Loan System
+Employee Leave System
+Notification System
+Payroll System
+Tax System
+Lots of Reports
+Role Permission System
+###################
 What is CodeIgniter
 ###################
 
