@@ -1,9 +1,11 @@
-## hr-payroll Human resource management system (HRM) 
+###################
+hr-payroll Human resource management system (HRM) 
+###################
 
 ###################
 Summery
 ###################
-This application based on new *Latest CodeIgniter framework*. *Human Resource Management system(HRM)* has become one of the most vital tools for any corporate environment. It’s very convincement for any kind of businesses and helps to keep the HR department clean and clear. Modern HRM software is not just a fancy it’s now become an essential tool for maintaining every corporate culture. Any company can use it for their regular tasks, employee workforce management and account management.
+This application based on new **Latest CodeIgniter framework**. **Human Resource Management system(HRM)** has become one of the most vital tools for any corporate environment. It’s very convincement for any kind of businesses and helps to keep the HR department clean and clear. Modern HRM software is not just a fancy it’s now become an essential tool for maintaining every corporate culture. Any company can use it for their regular tasks, employee workforce management and account management.
 
 ###################
 Features
@@ -55,6 +57,13 @@ Announcement/notice management,
 Report printing and export,
 Easily accessible UI,
 Responsive design,
+
+###################
+Authentication
+###################
+user:admin@gmail.com
+pass:admin123456
+
 
 ###################
 What is CodeIgniter
