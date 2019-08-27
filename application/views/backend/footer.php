@@ -209,9 +209,9 @@ $('form').each(function() {
             timeout: 600000,
             success: function (response) {
                 console.log(response);            
-                $(".message").fadeIn('fast').delay(300000).fadeOut('fast').html(response);
+                $(".message").fadeIn('fast').delay(3000).fadeOut('fast').html(response);
                 $('form').trigger("reset");
-                window.setTimeout(function(){location.reload()},300000);
+                window.setTimeout(function(){location.reload()},3000);
             },
             error: function (e) {
                 console.log(e);
