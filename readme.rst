@@ -1,6 +1,9 @@
 ###################
 hr-payroll Human resource management system (HRM) 
 ###################
+**I am available for PHP,Laravel,Codeigniter work, check out my Fiverr profile:**
+
+[Fiverr Profile](https://www.fiverr.com/nawjesh?up_rollout=true)
 
 ###################
 Summery
@@ -71,3 +74,8 @@ password:admin123456
 
 username:employee@gmail.com
 password:admin123456
+
+
+**I am available for PHP,Laravel,Codeigniter work, check out my Fiverr profile:**
+
+[Fiverr Profile](https://www.fiverr.com/nawjesh?up_rollout=true)
