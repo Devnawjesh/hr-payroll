@@ -83,19 +83,3 @@ Url: http://www.fiverr.com/s2/0e44853c56
 
 **Username: nawjesh**
 
-<!-- Put this code anywhere in the body of your page where you want the badge to show up. -->
-
-<div itemscope itemtype='http://schema.org/Person' class='fiverr-seller-widget' style='display: inline-block;'>
-     <a itemprop='url' href=https://www.fiverr.com/nawjesh rel="nofollow" target="_blank" style='display: inline-block;'>
-        <div class='fiverr-seller-content' id='fiverr-seller-widget-content-78105539-0199-4544-9e9f-af1f508cbfca' itemprop='contentURL' style='display: none;'></div>
-        <div id='fiverr-widget-seller-data' style='display: none;'>
-            <div itemprop='name' >nawjesh</div>
-            <div itemscope itemtype='http://schema.org/Organization'><span itemprop='name'>Fiverr</span></div>
-            <div itemprop='jobtitle'>Seller</div>
-            <div itemprop='description'>Developing is my passion. I'm an energetic and passionate full stack web developer who is also a fast learner. I've been developing websites using Wordpress, PHP,Laravel,codeigniter and Vue js for 3 years now and have worked on several projects. I always focus on providing high quality service & 100% satisfaction for my clients. I believe in Quality not Quantity.</div>
-        </div>
-    </a>
-</div>
-
-<script id='fiverr-seller-widget-script-78105539-0199-4544-9e9f-af1f508cbfca' src='https://widgets.fiverr.com/api/v1/seller/nawjesh?widget_id=78105539-0199-4544-9e9f-af1f508cbfca' data-config='{"category_name":"Programming \u0026 Tech"}' async='true' defer='true'></script>
-
