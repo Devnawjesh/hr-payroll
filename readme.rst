@@ -63,7 +63,7 @@ Authentication
 **super admin**
 
 username:nawjeshbd@gmail.com
-password:01723177901
+password:admin123456
 
 **admin**
 
