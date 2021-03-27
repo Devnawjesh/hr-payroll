@@ -129,7 +129,6 @@ class Attendance extends CI_Controller
                 $sout = new DateTime($new_date . $signout);
                 $hour = $sin->diff($sout);
                 $work = $hour->format('%H h %i m');
-                die($hour);
                 if (empty($id)) {
                     $day = date("D", strtotime($new_date_changed));
                     if($day == "Fri") {
