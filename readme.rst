@@ -5,6 +5,10 @@ hr-payroll Human resource management system (HRM)
 
 Url: http://www.fiverr.com/s2/0e44853c56
 
+**Or Contact email address:**
+
+nawjeshbd@gmail.com
+
 ###################
 Summery
 ###################
@@ -80,7 +84,7 @@ password:admin123456
 
 Url: http://www.fiverr.com/s2/0e44853c56
 
-**Or Contact with email:**
+**Or Contact email address:**
 
 nawjeshbd@gmail.com
 
