@@ -1,3 +1,5 @@
+> **Notice:** This repository now uses the new Laravel-based rebuild on the `main` branch. The previous legacy version may remain in an older branch for reference.
+
 # HR Payroll
 
 ZerithonLabs - A modern Human Resource Management and Payroll system rebuilt with Laravel.
