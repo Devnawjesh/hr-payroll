@@ -1,0 +1,1007 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>madPOS | madCoderz</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="../../../public/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../../public/favicon.png">
+    <link rel="stylesheet" href="../../../public/assets/css/normalize.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../../public/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../../../public/assets/css/main.css">
+    <link rel="stylesheet" href="../../../public/assets/css/jquery-jvectormap-2.0.3.css">
+    <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.1/css/bootstrap-datepicker.standalone.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.11/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" />
+    <script src="../../../public/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+    
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    
+    
+    
+    <style type="text/css">
+        nav .navbar-nav li > a {
+            color: #fff;
+        }
+        nav.navbar {
+            background-color: rgba(123, 31, 162, 0.79);
+        }
+        .nav .open>a, .nav .open>a:focus, .nav .open>a:hover {
+            background-color: rgba(123, 31, 162, 0.79);
+            border-color: rgba(123, 31, 162, 0.79);
+            border-color: #0288d0;
+            color: #fff;
+        }
+        .navbar-nav>.open>a, .nav>li>a:focus, .nav>li>a:hover {
+            background-color: transparent;
+            color: #fff;
+        }
+        
+        .left-sidebar {
+            background-color: rgb(41, 64, 98);
+        }
+        .sidebar-nav ul > li a {
+            color: #fff;
+        }
+        .sidebar-nav ul > li.menu-header {
+            color: #fff;
+        }
+        .sidebar-nav>ul>li.active>a {
+            background-color: rgba(255, 255, 255, 0.09);
+        }
+        .sidebar-nav ul li.active a i, .sidebar-nav ul li a:hover i {
+            color: #fff;
+        }
+
+        .navbar-collapse {
+            height: 50px;
+            max-height: 50px;
+        }
+
+        .navbar-nav>li>.dropdown-menu {
+            position: absolute;
+            right: 0;
+            left: auto;
+        }
+
+        .navbar .navbar-nav > li > a.dropdown-toggle::after {
+            border-left: 0;
+            border-right: 0;
+            border-top: 0;
+            content: ;
+            margin: 0;
+            display: inherit;
+        }
+
+        .navbar-nav .dropdown-menu {
+            border: none;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, .175), 0 0px 1px rgba(0, 0, 0, .09);
+            border-radius: 0;
+        }
+
+        .navbar .navbar-nav > li > a {
+            padding: 17px 20px;
+            display: block;
+            line-height: 14px;
+        }
+        @media only screen and (max-width: 544px) {
+            .navbar-nav>li>.dropdown-menu {
+                position: fixed;
+                right: 0;
+                left: 0;
+                top: 50px;
+            }
+        }
+        .notification-count i:after {
+            content: attr(data-badge);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 8px;
+            background: #F44336;
+            color: white;
+            width: 15px;
+            height: 15px;
+            text-align: center;
+            line-height: 14px;
+            border-radius: 50%;
+        }
+        .notification-count-changed i:after {
+            content: '0' !IMPORTANT;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+    <noscript>
+        <style type="text/css">
+            .wrapper-main {display:none;}
+        </style>
+        <div class="noscriptmsg">
+            We're sorry, but This Software doesn't work properly without JavaScript enabled. 
+        </div>
+    </noscript>
+    <script type="text/javascript">
+        var baseurl = "";
+        // console.log(baseurl);
+    </script>
+
+<body>
+    <div class="wrapper-main">
+        <header class="topbar clearfix">
+<nav class="navbar navbar-light" style="padding: 0; background-color: rgba(123, 31, 162, 0.79) !IMPORTANT;">
+
+    <div class="logo-container" style="min-width: 210px; height: 50px; background-color: #3a5b7d;">
+        <a class="navbar-brand text-start" href="" style="padding: 0px 0px 0px 10px;">
+            <img src="../../../public/assets/img/" alt="C" style="height: 30px !IMPORTANT;"> 
+        </a>
+    </div>
+
+    <div class="" id="navbarSupportedContent" style="display: flex; flex-direction: row; justify-content: space-between; flex-grow: 1; height: 50px;">
+        <ul class="navbar-nav me-auto">
+            <li class="d-none d-md-block">
+                <a href="#" class="sidebar-toggle">
+                    <i class="icon-menu"></i>
+                </a>
+            </li>
+            <li class="d-md-none">
+                <a href="#" id="sidebar-toggle">
+                    <i class="icon-menu"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row;">
+            <li style="margin-top: 8px;" class="d-none d-md-block">
+                <!--Language list-->
+
+                <!--Add a new language option here similar to the other ones and then add a new folder with the same language name in the application/languages fodler with the correct translation-->
+
+                <select class="form-control" onchange="javascript:window.location.href='MultiLanguageSwitcher/switch/'+this.value;">
+                      <option value="english" >English</option>
+                      <option value="bangla" >বাংলা</option>
+                      <option value="hindi" >हिंदी</option>
+                      <option value="french" >Français</option>
+                      <option value="german" >Deutsche</option> 
+                      <option value="dutch" >Dutch</option>  
+                      <option value="spanish" >Español</option>  
+                      <option value="russian" >русский</option>  
+                      <option value="italian" >итальянский</option>  
+                </select>
+            </li>
+            <li class="dropdown notification-parent d-none d-sm-block">
+                <a href="" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle notification-count">
+                    <i class="icon-bubbles notification-icon" data-badge="" style="position: relative;"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li class="dropdown-head">
+                        Recent Comments
+                    </li>
+                    
+                    <li class="box-list">
+                        
+                        <a href="user/View_profile?U=">
+                            <div class="media">
+                                <div class="media-left box-img">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/default.jpg">
+                                    
+                                </div>
+                                <div class="media-body box-text">
+                                    <h6>
+                                        
+                                    </h6>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </li>
+                    
+                    <li class="box-list" style="padding: 15px 0 15px 25px;">
+                        All Caught Up!
+                    </li>
+                    
+                    <li class="dropdown-foot">
+                        View All
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown notification-parent d-none d-sm-block">
+                <a href="" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle notification-count-value">
+                    <i class="icon-bell notification-icon" data-badge="" style="position: relative;"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li class="dropdown-head">
+                        Short Stock
+                    </li>
+                    <li class="box-list">
+                        
+                        <a href="product/product_details?P=">
+                            <div class="media">
+                                <div class="media-left box-img">
+                                    <img src="../../../public/assets/img/product/">
+                                </div>
+                                <div class="media-body box-text">
+                                     | 
+                                    <b style="color: #f44336;"> left</b>
+                                    <br>
+                                    
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </li>
+                    <li class="dropdown-foot">
+                        <a class="hover-bg-none" href="Report/shortStock">View all</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                    <span class="user-img float-start">
+                       
+                        <img alt="madpos" src="../../../public/assets/img/user/">
+                        
+                        <img alt="madpos" src="../../../public/assets/img/user/default.jpg">                                        
+                        
+                    </span><span class="caret"></span>
+                </a>
+                <div class="dropdown-menu topbar-dropdown-wrapper" role="menu">
+                    <ul class="dropdown-user-inner">
+                        <li>
+                            <div class="dd-userbox">
+                                <div class="dd-img">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/default.jpg">
+                                    
+                                </div>
+                                <div class="dd-info">
+                                    <h4>
+                                        
+                                    </h4>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li data-id="users" class="main"><a href="user/View_profile?U="><i class="icon-user mr10"></i> Profile</a></li>
+                        <li><a id="resetmodal" href=""><i class="icon-key mr10"></i> Change Password</a></li>
+                        <li class="divider"></li>
+                        <li data-id="configuration" class="main"><a href="configuration/siteSettings"><i class="icon-settings mr10"></i> Configuration</a></li>
+                        <li data-id="dashboard" class="main"><a href="login/logout"><i class="icon-logout mr10"></i> Sign Out</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+        </header>
+        <aside class="left-sidebar">
+            <div class="slimscroll-left-sidebar">
+                <nav class="sidebar-nav">
+                   <div class="sidebar-header text-center" style="padding: 25px 0; position: relative; top: 0;">
+                       <figure class="side-user-bg" style="background-image: url(assets/img/sidebar.jpg); opacity: 0.07; margin: 0; position: absolute; top: 0; right: 0; bottom: 0; left: 0; opacity: 0.2; background-size: cover; background-position: center center;">
+                            <img src="../../../public/assets/img/sidebar.jpg" alt="" class="" style="display: none;">
+                        </figure>
+                        <img src="../../../public/assets/img/user/" alt="profile image" style="width: 50px; height: 50px; border-radius: 50%; margin: 0 auto;">
+                        <h5 class="text-center font-weight-medium" style="color: #ffffff;padding-bottom:10px"></h5>
+                   </div>
+                    <ul>                      
+                        <li data-id="dashboard" id="dashboard" class="main">
+                            <a class="" href="Dashboard" aria-expanded="false">
+                                <i class="icon-grid"></i>
+                                <span class="">
+                                    Dashboard
+                                </span>
+                            </a>
+                        </li>
+                        <li data-id="dashboard" id="dashboard" class="main">
+                            <a class="" href="invoice/invoice_Pos" aria-expanded="false">
+                                <i class="icon-bag"></i>
+                                <span class="">
+                                    POS
+                                </span>
+                            </a>
+                        </li>
+                        <li data-id="customers" id="customers" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-emotsmile"></i>
+                                <span class="">
+                                    Customer
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="customer/customerList">Customers</a></li>
+                                <li><a href="customer/addCustomer">Add Customer</a></li>
+                                <li><a href="customer/newCustomer">New Customer</a></li>
+                            </ul>
+                        </li>
+                        <li data-id="sales" id="sales" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-diamond"></i>
+                                <span class="">
+                                    Sales
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="invoice/invoiceList">Sales Invoice</a></li>
+                                <!--<li><a href="invoice/returninvoiceList">Return Invoice</a></li>-->
+                                
+                                <li><a href="invoice/userSalesReport">Customer</a></li>
+                                
+                            </ul>
+                        </li>
+                        <li data-id="product" id="product" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-tag"></i>
+                                <span class="">
+                                    Product
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="product/viewCategory">Category</a></li>
+                                <li><a href="product/viewSubcategory">Sub Category</a></li>
+                                <li><a href="product/viewSize">Size</a></li>
+                                <li><a href="product/viewColor">Color</a></li>
+                                <li><a href="product/view_brand">Brand</a></li>
+                                <li><a href="product/productList">List Product</a></li>
+                                <li><a href="product/viewProduct">Add Product</a></li>
+                            </ul>
+                        </li><!--
+
+                        <li data-id="return" id="return" class="main">
+                            <a class="" href="return_Policy/returnPolicy" aria-expanded="false">
+                                <i class="icon-shuffle"></i>
+                                <span class="">
+                                    Return
+                                </span>
+                            </a>
+                        </li>-->
+                        <li data-id="report" id="report" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-chart"></i>
+                                <span class="">
+                                    Report
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="Report/todaysReport">Today's Report</a></li>
+                                <li><a href="Report/bestSelling">Best Selling Product</a></li>
+                                <li><a href="Report/shortStock">Short Stock</a></li>
+                                
+                                <li><a href="Report/userSalesReport">User Sales Report</a></li>
+                                
+                            </ul>
+                        </li>
+                        
+                        <li data-id="expense" id="expense" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-compass"></i>
+                                <span class="">
+                                    Expense
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="Expense/expenseCategory">Expense Category</a></li>
+                                <li><a href="Expense/expenseList">Expenses</a></li>
+                            </ul>
+                        </li>
+                        
+                        
+                        <li data-id="users" id="users" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-user"></i>
+                                <span class="">
+                                    Users
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="user/listUser">List User</a></li>
+                                <li><a href="user/Add_User">Add User</a></li>
+                            </ul>
+                        </li>
+                        
+                        
+                        <li data-id="user-role" id="user-role" class="main">
+                            <a class="" href="user/listGroup" aria-expanded="false">
+                                <i class="icon-shuffle"></i>
+                                <span class="">
+                                    Users Role
+                                </span>
+                            </a>
+                        </li>
+                        
+                        
+                        <li data-id="backup" id="backup" class="main">
+                            <a class="" href="configuration/Backup_page" aria-expanded="false">
+                               <i class="icon-arrow-down-circle" aria-hidden="true"></i>
+                                <span class="">
+                                    Backup
+                                </span>
+                            </a>
+                        </li>
+                        
+                        
+                        <li data-id="configuration" id="configuration" class="main">
+                            <a class="" href="configuration/siteSettings" aria-expanded="false">
+                                <i class="icon-settings" aria-hidden="true"></i>
+                                <span class="">
+                                    Configuration
+                                </span>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+<style>
+    .input-group-addon {
+        border-radius: 0px !IMPORTANT;
+    }
+</style>
+<div class="wrapper-page">
+    <div class="flashmessage"></div>
+    <div class="page-content" style="margin-top:20px">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="content_wrapper">
+                        <div class="pos_inputs">
+                            <div class="p2415">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <form role="form" action="" id="customerValueUpdate" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+                                            <div class="row mb-1">
+                                                <div class="col-md-3 cut-padding-right unset-cut-padding">
+                                                    <div class="input-group mb-1 mb-sm-1">
+                                                        <span class="input-group-text b-r-0" style="background-color: #fff;"><i class="fa fa-search" aria-hidden="true"></i>
+                                                            </span>
+                                                        <input type="text" class="form-control ui-autocomplete-input" name="cusid" id="cusid" placeholder="Customer Name And Phone Number..." tabindex="1" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="input-group mb-1 mb-sm-1">
+                                                        <span class="input-group-text b-r-0" style="background-color: #fff;">
+                                                            <i class="icon-user"></i></span>
+                                                        <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Customer Name" value="" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="input-group mb-1 mb-sm-1">
+                                                        <span class="input-group-text b-r-0" style="background-color: #fff;">
+                                                            <i class="fa fa-user-o"></i></span>
+                                                        <input type="text" class="form-control customer_id" name="customer_id" id="customer_id" placeholder="Customer Id" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="date_time_wrapper">
+                                                        <div class="row">
+                                                            <div class="col-6 text-end cut-padding">
+                                                                <span class="custom-text-button">
+                                                                               
+                                                              </span>
+                                                            </div>
+                                                            <div class="col-6 text-start cut-padding">
+                                                                <span class="custom-text-button">
+                                                                                                   
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--Product Info Section Start-->
+                                            <div class="row mb-1">
+                                                <div class="col-md-3 cut-padding-right unset-cut-padding">
+                                                    <div class="input-group mb-1 mb-sm-1">
+                                                        <span class="input-group-text b-r-0" style="background-color: #fff;">
+                                                                <i class="fa fa-search" aria-hidden="true"></i>
+                                                            </span>
+                                                        <input type="text" class="form-control proval ui-autocomplete-input" name="proval" placeholder="Barcode,Product Id..." id="product_name" tabindex="2" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="input-group mb-1 mb-sm-1">
+                                                        <span class="input-group-text b-r-0" style="background-color: #fff; padding: 8px 13px;">
+                                                            <i class="fa fa-tag"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control proname" name="proname" id="proname" placeholder="Product Name" autocomplete="off">
+                                                        <input type="hidden" class="form-control proid" name="proid" id="proid" autocomplete="off">
+                                                        <!-- <sup id="running" style="color:red;margin-top: 5px;margin-left: 45px;"></sup> -->
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="row">
+                                                        <div class="col-md-6 unset-cut-padding" style="padding-right: 0px;">
+                                                            <div class="input-group mb-1 mb-sm-1">
+                                                                <input type="text" class="form-control qty" name="qty" max="" id="qty" placeholder="Quantity " tabindex="3" autocomplete="off">
+                                                                <!-- TABINDEX RESET INPUT  -->
+                                                                <input type="text" tabindex="4" onfocus="document.getElementById('product_name').focus()" style="position: fixed; top: 9999px; left: 9999px">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 no-padding-left unset-cut-padding" style="">
+                                                            <div class="input-group mb-1">
+                                                                <input type="text" class="form-control mrp no-border-left" name="mrp" id="mrp" placeholder="MRP" readonly="" tabindex="-1" value="" style="">
+                                                            </div>
+                                                            <sup class="discount" style="color:red;margin-top:5px;"></sup>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text" style="background-color: #fff;">
+                                                                <i class="fa fa-cart-arrow-down"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control stock" name="stock" id="stock" placeholder="Stock " readonly="" tabindex="-1" value="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <!--Product Info Section End-->
+                                        <!--List Product for cart-->
+                                        <form action="" method="post" name="SalesFormConfirm" class="SalesFormConfirm" id="SalesFormConfirm" enctype="multipart/form-data" novalidate="novalidate" accept-charset="utf-8">
+                                            <div class="row">
+                                                <div class="col-md-9 cut-padding-right unset-cut-padding">
+                                                    <div class="table-responsive" style="height: 300px; overflow-y: auto; ">
+                                                        <table class="table table-bordered pos_table scroll">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        Product Name
+                                                                    </th>
+                                                                    <th>
+                                                                        Quantity
+                                                                    </th>
+                                                                    <th>
+                                                                        Total
+                                                                    </th>
+                                                                    <th>
+                                                                        Action
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="posinfo">
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 cut-padding unset-cut-padding">
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right unset-cut-padding">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Total
+                                                          </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left unset-cut-padding">
+                                                            <input class="form-control grandtotal" name="grandtotal" type="text" value="" style="" tabindex="-1" readonly="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right unset-cut-padding">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Discount
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left unset-cut-padding">
+                                                            <input class="form-control gdiscount" name="gdiscount" id="gdiscount" type="text" value="0" style="" tabindex="-1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right unset-cut-padding">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Tax
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left unset-cut-padding">
+                                                            <input class="form-control tax" name="tax" id="tax" type="text" value="0" tabindex="-1">
+                                                            <input class="form-control totalTax" name="totalTax" id="totalTax" type="hidden" value="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right unset-cut-padding">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Payable
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left unset-cut-padding">
+                                                            <input class="form-control payable" name="payable" type="text" value="" style="" tabindex="-1" id="payable">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Paid
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left">
+                                                            <input class="form-control pay" type="text" name="pay" value="" style="" tabindex="-1" required="1" id="pay">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Return
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left">
+                                                            <input class="form-control return" name="return" type="text" value="" style="" tabindex="-1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-md-5 cut-padding-right">
+                                                            <label for="example-text-input" class=" col-form-label pos-label">Due
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-7 cut-padding-left">
+                                                            <input class="form-control due" name="due" type="text" value="" style="" tabindex="-1">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div><input type="hidden" id="cid" name="cid" value="" tabindex="-1">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <button type="button" id="saleSubmit" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#salesInvoice">Sales & Invoice
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <!--List Product for cart End-->
+                                    </div>
+                                    <div class="col-md-2">
+                                        <!--Super Sale Product-->
+                                        <div class="card">
+                                            <div class="card-header" style="margin-bottom:10px">
+                                                <button type="button" style="width: 100%" data-bs-toggle="modal" data-bs-target="#myModal" id="btnSubmit" name="submit" class="btn btn-custom">Add Customer</button>
+                                            </div>
+                                            <div class="card-header" style="margin-bottom:10px">
+                                                <button class="btn btn-custom" style="width: 100%; background-color: #003366; border: 0;">
+                                            Super Sale
+                                          </button>
+                                            </div>
+                                            <div class="card-body" style="padding: 0;">
+                                                <ul class="list-group custom_list pos_list" style="height: 420px; overflow-y: auto;">
+                                                    
+                                                    <li class="super-sale-list" style="border-bottom:.5px solid #e3e3e3; margin-bottom: 5px; padding-bottom: 5px;"> <img src="../../../public/assets/img/product/" alt="" height="60px" width="60px" style="border-radius:50%"> <a href="" id="superpro" data-id="" data-name="" data-mrp="" data-qty=""> </a>
+                                                    </li>
+                                                    
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLiveLabel" style="display: inline-block;">Add Customer</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form role="form" action="" id="formid" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="name" class="col-md-3">Full Name</label>
+                            <div class="col-md-9">
+                                <input type="text" name="name" id="name" class="form-control name" id="inputMaxLength" value='' placeholder="Full Name..." minlength="5" maxlength="25" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="name" class="col-md-3">Customer Id</label>
+                            <div class="col-md-9">
+                                <input type="text" name="cid" id="cidval" class="form-control cid" value='' placeholder="Customer Id..." readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="email" class="col-md-3">Email</label>
+                            <div class="col-md-9">
+                                <input type="email" name="email" id="email" class="form-control email" value='' placeholder="Email...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="contact" class="col-md-3">Contact Number</label>
+                            <div class="col-md-9">
+                                <input type="number" name="contact" id="contact" class="form-control contact" value='' placeholder="Contact Number..." required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="address" class="col-md-3">Address</label>
+                            <div class="col-md-9">
+                                <input type="text" name="address" id="address" class="form-control address" value='' placeholder="Address...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="user_image" class="col-md-3">Upload Image</label>
+                            <label for="user_image" style="margin-left: 15px;" class="custom-file-upload">Upload Image</label>
+                            <input type="file" class="" id="user_image" name="user_image" aria-describedby="fileHelp">
+                            <div class="file_prev"></div>
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="row">
+                            <label for="gender" class="col-md-3">Gender</label>
+                            <div class="col-md-9">
+                                <div class="form-check form-check-inline">
+                                    <input type="radio" class="gender form-check-input" name="gender" value="Male">
+                                    <label class="form-check-label">MALE</label>
+                                    
+                                    <input type="radio" class="gender form-check-input" name="gender" value="Female">
+                                    <label class="form-check-label"> FEMALE</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-custom" id="FinalSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Invoice Modal -->
+<div id="salesInvoice" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width: 350px;">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div id="invoicedom">
+
+            </div>
+            <div class="text-end">
+                <button id="print" class="btn btn-custom" type="button"> 
+                  <span>
+                    <i class="fa fa-print"></i> Print
+                  </span> 
+                </button>
+                <button type="button" class="btn btn-secondary btn-custom invoiceClose">Close</button>
+            </div>
+        </div>
+        <!-- ./model-content  -->
+    </div>
+</div>
+
+
+<script src="../../../public/assets/js/pos/pos.js"></script>
+<script type="text/javascript">
+    /*Customer search by customer id*/
+    $(function() {
+        $("#cusid").autocomplete({
+            source: function(request, response) {
+                // Fetch data
+                $.ajax({
+                    url: "Invoice/getCustomerById",
+                    type: 'post',
+                    dataType: "json",
+                    cache: false,
+                    data: {
+                        search: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            select: function(event, ui) {
+                // Set selection
+                $('#cusid').val(''); // display the selected text
+                $('#customer_name').val(ui.item.label); // display the selected text
+                $('#cid').val(ui.item.value); // display the selected text
+                $('#customer_id').val(ui.item.value); // save selected id to input
+                $("#cusid").autocomplete('close');
+                $("#cusid").autocomplete('destroy');
+                $('#product_name').attr('tabindex', 2).focus();
+                return false;
+            },
+        });
+    });
+    /*Barcode,Product id search by autocompleate*/
+    $(function() {
+        $(this.target).find('input').autocomplete();
+        $("#product_name").autocomplete({
+            source: function(request, response) {
+                // Fetch data
+                $.ajax({
+                    url: "Invoice/getProductparam",
+                    type: 'post',
+                    dataType: "json",
+                    cache: false,
+                    data: {
+                        search: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            select: function(event, ui) {
+                // Set selection
+                $('#proid').val(ui.item.value); // display the selected text
+                $('#proname').val(ui.item.label); // display the selected text
+                $('#product_name').val(''); // display the selected text
+                $('#mrp').val(ui.item.mrp); // save selected id to input
+                $('.discount').html(ui.item.discount); // save selected id to input
+                $('#running').html(ui.item.running); // save selected id to input
+                $('.stock').val(ui.item.stock); // save selected id to input
+                $("#product_name").autocomplete('close');
+                $('#qty').attr('tabindex', 3).focus();
+                return false;
+            },
+            open: function(e, ui) {
+                var val = $('.ui-autocomplete > li').length;
+                //console.log(val);
+                if (val == 1) {
+                    $(".ui-menu-item:eq(0)").trigger("click");
+                    $("#product_name").autocomplete('close');
+                    //console.log(val);
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+        <!--Reset password validation modal-->
+		<div class="modal fade" id="reset" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                            <div class="modal-header modal-primary">
+								<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+								<h4 class="modal-title" id="modal-label">Reset Password</h4>
+							</div>	
+                          <div class="message"> </div>  
+			            <form role="form" action="user/addResetPassword" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+								<div class="form-group">
+                                <label for="oldPassword" class="control-label">Old Password</label>
+                                <input type="password" name="oldpass" class="form-control" id="oldPassword" value="" placeholder="" required >
+                                </div>
+								<div class="form-group">
+                                <label for="newPassword" class="control-label">New Password</label>
+                                <input type="password" name="newpass" class="form-control" id="newPassword" value="" placeholder="" required >
+                                </div>
+								<div class="form-group">
+                                <label for="confirmNewPass" class="control-label">Confirm Password</label>
+                                <input type="password" name="confirmpass" class="form-control" id="confirmNewPass" value="" placeholder="" required >
+                                </div>													
+                            </div>
+                            <div class="modal-footer">
+                                <button id="" type="submit" name="submit" class="btn btn-custom">Ok</button>
+                                <button type="button" class="btn btn-custom" onclick="location.reload()" data-bs-dismiss="modal">Close</button>
+                            </div>
+						</form>
+                </div>
+            </div>
+        </div> 
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#resetmodal").click(function (e) {
+                e.preventDefault(e);
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('reset')).show();
+            });
+        });
+        </script>          
+        <div class="footer">
+        	© 2018 MadPos by madcoderz.com
+        </div>
+
+    </div>
+ 
+    <script src="../../../public/assets/js/vendor/modernizr-3.5.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="../../../public/assets/js/bootstrap5-bridge.js"></script>
+    <script src="../../../public/assets/js/vendor/select2.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+    <script src="../../../public/assets/js/vendor/jquery.magnific-popup.min.js"></script> 
+        
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.11/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.11/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.1/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    <script src="../../../public/assets/js/main.js"></script>
+    <script src="../../../public/assets/js/jquery.PrintArea.js"></script>
+    
+    <script src="../../../public/assets/js/return/return.js"></script>
+    
+    <script src="../../../public/assets/js/jquery-jvectormap-2.0.3.min.js"></script>
+    <script src="../../../public/assets/js/jquery-jvectormap-world-mill.js"></script>
+    <!--Dashboard chart JS-->   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js" integrity="sha256-UGwvyUFH6Qqn0PSyQVw4q3vIX0wV1miKTracNJzAWPc=" crossorigin="anonymous"></script>    
+    
+    <script src="../../../public/assets/js/custom/customer.js"></script>
+    
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js" ></script>
+    <script>
+    //initiate the plugin and pass the id of the div containing gallery images
+    $("#zoom_03").elevateZoom({
+        zoomType: 'lens',
+        lensShape: 'square',
+        lensSize: '250',
+        easing: true,
+        cursor: 'pointer',
+        galleryActiveClass: 'active',
+        zoomWindowPosition: 11,
+        gallery: 'gallery_01',
+        borderSize: 0,
+        containLensZoom: true,
+        responsive: true,
+        lensShape: 'round'
+    });
+
+    //pass the images to Fancybox
+    $("#zoom_03").bind("click", function(e) {
+        $('#zoom_03').data('elevateZoom');
+        return false;
+    });
+    </script>     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script type="text/javascript">
+    // updating the view with notifications using ajax
+    function load_unseen_notification(id = '') {
+        $.ajax({
+            url: "user/set_notification",
+            method: "POST",
+            data: { id: id }
+        });
+    }
+
+    $(document).on('click', '.notification-count', function() {
+        
+        load_unseen_notification('');
+        $(this).addClass('notification-count-changed');
+    });
+    </script>	
+</body>
+
+</html>

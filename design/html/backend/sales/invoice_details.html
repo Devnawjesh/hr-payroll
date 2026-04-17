@@ -1,0 +1,227 @@
+
+<div class="wrapper-page">
+    <div class="page-title">
+        <h1><i class="icon-emotsmile"></i>
+            Invoice
+        </h1>
+    </div>
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="invoice-wrapper table-responsive">
+                                <table class="table table-no-border">
+                                    <tr>
+                                        <td><img src="../../../public/assets/img/"></td>
+                                        <td></td>
+                                        <td class="text-end">
+                                            <span class="badge bg-danger">Invoice #</span>
+                                            <br />
+                                            <span>Bill Date: </span>
+                                            <br />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b></b>
+                                            <br />
+                                            
+                                            <br /><br />
+                                            
+                                            <br />
+                                            
+                                        </td>
+                                        <td></td>
+                                        <td class="text-end">
+                                            Bill For <b></b>
+                                            <br />
+                                            ,
+                                            <br /><br />
+                                            
+                                            <br />
+                                            
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+
+                                <div class="invoice-table" style="margin-top: 40px;">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Description
+                                                </th>
+                                                <th class="text-end">
+                                                    Quantity
+                                                </th>
+                                                <th class="text-end">
+                                                    Price
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            <tr>
+                                                <td>
+                                                    
+                                                </td>
+                                                <td class="text-start">
+                                                    
+                                                </td>
+                                                <td class="text-end">
+                                                    
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Total
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Total Discount
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Tax
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Total Paid
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Total Due
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    
+                                    <h4>Return Invoice</h4>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Description
+                                                </th>
+                                                <th class="text-end">
+                                                    Return Qty
+                                                </th>
+                                                <th class="text-end">
+                                                    Deduction
+                                                </th>
+                                                <th class="text-end">
+                                                    Price
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            <tr>
+                                                <td>
+                                                    
+                                                </td>
+                                                <td class="text-start">
+                                                    
+                                                </td>
+                                                <td class="text-start">
+                                                    
+                                                </td>
+                                                <td class="text-end">
+                                                    
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Total
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Total Deduction
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">
+                                                    Return Total
+                                                </td>
+                                                <td class="text-end" colspan="2">
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    
+                                    <hr>
+                                    <span class="badge bg-danger">Bill By #</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="print" class="btn btn-custom mb-4" type="button" style="float:right"> 
+                      <span>
+                        <i class="fa fa-print"></i> Print
+                      </span> 
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /*Print invoice*/
+    $(document).ready(function() {
+        $("#print").click(function() {
+            var mode = 'iframe'; //popup
+            var close = mode == "popup";
+            var options = {
+                mode: mode,
+                popClose: close
+            };
+            $("div.card").printArea(options);
+        });
+    });
+</script>

@@ -1,0 +1,172 @@
+    <noscript>
+        <style type="text/css">
+            .wrapper-main {display:none;}
+        </style>
+        <div class="noscriptmsg">
+            We're sorry, but This Software doesn't work properly without JavaScript enabled. 
+        </div>
+    </noscript>
+    <script type="text/javascript">
+        var baseurl = "";
+        // console.log(baseurl);
+    </script>
+
+<body>
+    <div class="wrapper-main">
+        <header class="topbar clearfix">
+<nav class="navbar navbar-light" style="padding: 0; background-color: rgba(123, 31, 162, 0.79) !IMPORTANT;">
+
+    <div class="logo-container" style="min-width: 210px; height: 50px; background-color: #3a5b7d;">
+        <a class="navbar-brand text-start" href="" style="padding: 0px 0px 0px 10px;">
+            <img src="../../../public/assets/img/" alt="C" style="height: 30px !IMPORTANT;"> 
+        </a>
+    </div>
+
+    <div class="" id="navbarSupportedContent" style="display: flex; flex-direction: row; justify-content: space-between; flex-grow: 1; height: 50px;">
+        <ul class="navbar-nav me-auto">
+            <li class="d-none d-md-block">
+                <a href="#" class="sidebar-toggle">
+                    <i class="icon-menu"></i>
+                </a>
+            </li>
+            <li class="d-md-none">
+                <a href="#" id="sidebar-toggle">
+                    <i class="icon-menu"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row;">
+            <li style="margin-top: 8px;" class="d-none d-md-block">
+                <!--Language list-->
+
+                <!--Add a new language option here similar to the other ones and then add a new folder with the same language name in the application/languages fodler with the correct translation-->
+
+                <select class="form-control" onchange="javascript:window.location.href='MultiLanguageSwitcher/switch/'+this.value;">
+                      <option value="english" >English</option>
+                      <option value="bangla" >বাংলা</option>
+                      <option value="hindi" >हिंदी</option>
+                      <option value="french" >Français</option>
+                      <option value="german" >Deutsche</option> 
+                      <option value="dutch" >Dutch</option>  
+                      <option value="spanish" >Español</option>  
+                      <option value="russian" >русский</option>  
+                      <option value="italian" >итальянский</option>  
+                </select>
+            </li>
+            <li class="dropdown notification-parent d-none d-sm-block">
+                <a href="" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle notification-count">
+                    <i class="icon-bubbles notification-icon" data-badge="" style="position: relative;"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li class="dropdown-head">
+                        Recent Comments
+                    </li>
+                    
+                    <li class="box-list">
+                        
+                        <a href="user/View_profile?U=">
+                            <div class="media">
+                                <div class="media-left box-img">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/default.jpg">
+                                    
+                                </div>
+                                <div class="media-body box-text">
+                                    <h6>
+                                        
+                                    </h6>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </li>
+                    
+                    <li class="box-list" style="padding: 15px 0 15px 25px;">
+                        All Caught Up!
+                    </li>
+                    
+                    <li class="dropdown-foot">
+                        View All
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown notification-parent d-none d-sm-block">
+                <a href="" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle notification-count-value">
+                    <i class="icon-bell notification-icon" data-badge="" style="position: relative;"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li class="dropdown-head">
+                        Short Stock
+                    </li>
+                    <li class="box-list">
+                        
+                        <a href="product/product_details?P=">
+                            <div class="media">
+                                <div class="media-left box-img">
+                                    <img src="../../../public/assets/img/product/">
+                                </div>
+                                <div class="media-body box-text">
+                                     | 
+                                    <b style="color: #f44336;"> left</b>
+                                    <br>
+                                    
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </li>
+                    <li class="dropdown-foot">
+                        <a class="hover-bg-none" href="Report/shortStock">View all</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                    <span class="user-img float-start">
+                       
+                        <img alt="madpos" src="../../../public/assets/img/user/">
+                        
+                        <img alt="madpos" src="../../../public/assets/img/user/default.jpg">                                        
+                        
+                    </span><span class="caret"></span>
+                </a>
+                <div class="dropdown-menu topbar-dropdown-wrapper" role="menu">
+                    <ul class="dropdown-user-inner">
+                        <li>
+                            <div class="dd-userbox">
+                                <div class="dd-img">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/default.jpg">
+                                    
+                                </div>
+                                <div class="dd-info">
+                                    <h4>
+                                        
+                                    </h4>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li data-id="users" class="main"><a href="user/View_profile?U="><i class="icon-user mr10"></i> Profile</a></li>
+                        <li><a id="resetmodal" href=""><i class="icon-key mr10"></i> Change Password</a></li>
+                        <li class="divider"></li>
+                        <li data-id="configuration" class="main"><a href="configuration/siteSettings"><i class="icon-settings mr10"></i> Configuration</a></li>
+                        <li data-id="dashboard" class="main"><a href="login/logout"><i class="icon-logout mr10"></i> Sign Out</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+        </header>

@@ -1,0 +1,798 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>madPOS | madCoderz</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="../../../public/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../../public/favicon.png">
+    <link rel="stylesheet" href="../../../public/assets/css/normalize.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../../public/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../../../public/assets/css/main.css">
+    <link rel="stylesheet" href="../../../public/assets/css/jquery-jvectormap-2.0.3.css">
+    <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.1/css/bootstrap-datepicker.standalone.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.11/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" />
+    <script src="../../../public/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+    
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    
+    
+    
+    <style type="text/css">
+        nav .navbar-nav li > a {
+            color: #fff;
+        }
+        nav.navbar {
+            background-color: rgba(123, 31, 162, 0.79);
+        }
+        .nav .open>a, .nav .open>a:focus, .nav .open>a:hover {
+            background-color: rgba(123, 31, 162, 0.79);
+            border-color: rgba(123, 31, 162, 0.79);
+            border-color: #0288d0;
+            color: #fff;
+        }
+        .navbar-nav>.open>a, .nav>li>a:focus, .nav>li>a:hover {
+            background-color: transparent;
+            color: #fff;
+        }
+        
+        .left-sidebar {
+            background-color: rgb(41, 64, 98);
+        }
+        .sidebar-nav ul > li a {
+            color: #fff;
+        }
+        .sidebar-nav ul > li.menu-header {
+            color: #fff;
+        }
+        .sidebar-nav>ul>li.active>a {
+            background-color: rgba(255, 255, 255, 0.09);
+        }
+        .sidebar-nav ul li.active a i, .sidebar-nav ul li a:hover i {
+            color: #fff;
+        }
+
+        .navbar-collapse {
+            height: 50px;
+            max-height: 50px;
+        }
+
+        .navbar-nav>li>.dropdown-menu {
+            position: absolute;
+            right: 0;
+            left: auto;
+        }
+
+        .navbar .navbar-nav > li > a.dropdown-toggle::after {
+            border-left: 0;
+            border-right: 0;
+            border-top: 0;
+            content: ;
+            margin: 0;
+            display: inherit;
+        }
+
+        .navbar-nav .dropdown-menu {
+            border: none;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, .175), 0 0px 1px rgba(0, 0, 0, .09);
+            border-radius: 0;
+        }
+
+        .navbar .navbar-nav > li > a {
+            padding: 17px 20px;
+            display: block;
+            line-height: 14px;
+        }
+        @media only screen and (max-width: 544px) {
+            .navbar-nav>li>.dropdown-menu {
+                position: fixed;
+                right: 0;
+                left: 0;
+                top: 50px;
+            }
+        }
+        .notification-count i:after {
+            content: attr(data-badge);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 8px;
+            background: #F44336;
+            color: white;
+            width: 15px;
+            height: 15px;
+            text-align: center;
+            line-height: 14px;
+            border-radius: 50%;
+        }
+        .notification-count-changed i:after {
+            content: '0' !IMPORTANT;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+    <noscript>
+        <style type="text/css">
+            .wrapper-main {display:none;}
+        </style>
+        <div class="noscriptmsg">
+            We're sorry, but This Software doesn't work properly without JavaScript enabled. 
+        </div>
+    </noscript>
+    <script type="text/javascript">
+        var baseurl = "";
+        // console.log(baseurl);
+    </script>
+
+<body>
+    <div class="wrapper-main">
+        <header class="topbar clearfix">
+<nav class="navbar navbar-light" style="padding: 0; background-color: rgba(123, 31, 162, 0.79) !IMPORTANT;">
+
+    <div class="logo-container" style="min-width: 210px; height: 50px; background-color: #3a5b7d;">
+        <a class="navbar-brand text-start" href="" style="padding: 0px 0px 0px 10px;">
+            <img src="../../../public/assets/img/" alt="C" style="height: 30px !IMPORTANT;"> 
+        </a>
+    </div>
+
+    <div class="" id="navbarSupportedContent" style="display: flex; flex-direction: row; justify-content: space-between; flex-grow: 1; height: 50px;">
+        <ul class="navbar-nav me-auto">
+            <li class="d-none d-md-block">
+                <a href="#" class="sidebar-toggle">
+                    <i class="icon-menu"></i>
+                </a>
+            </li>
+            <li class="d-md-none">
+                <a href="#" id="sidebar-toggle">
+                    <i class="icon-menu"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row;">
+            <li style="margin-top: 8px;" class="d-none d-md-block">
+                <!--Language list-->
+
+                <!--Add a new language option here similar to the other ones and then add a new folder with the same language name in the application/languages fodler with the correct translation-->
+
+                <select class="form-control" onchange="javascript:window.location.href='MultiLanguageSwitcher/switch/'+this.value;">
+                      <option value="english" >English</option>
+                      <option value="bangla" >বাংলা</option>
+                      <option value="hindi" >हिंदी</option>
+                      <option value="french" >Français</option>
+                      <option value="german" >Deutsche</option> 
+                      <option value="dutch" >Dutch</option>  
+                      <option value="spanish" >Español</option>  
+                      <option value="russian" >русский</option>  
+                      <option value="italian" >итальянский</option>  
+                </select>
+            </li>
+            <li class="dropdown notification-parent d-none d-sm-block">
+                <a href="" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle notification-count">
+                    <i class="icon-bubbles notification-icon" data-badge="" style="position: relative;"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li class="dropdown-head">
+                        Recent Comments
+                    </li>
+                    
+                    <li class="box-list">
+                        
+                        <a href="user/View_profile?U=">
+                            <div class="media">
+                                <div class="media-left box-img">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/default.jpg">
+                                    
+                                </div>
+                                <div class="media-body box-text">
+                                    <h6>
+                                        
+                                    </h6>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </li>
+                    
+                    <li class="box-list" style="padding: 15px 0 15px 25px;">
+                        All Caught Up!
+                    </li>
+                    
+                    <li class="dropdown-foot">
+                        View All
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown notification-parent d-none d-sm-block">
+                <a href="" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle notification-count-value">
+                    <i class="icon-bell notification-icon" data-badge="" style="position: relative;"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-box">
+                    <li class="dropdown-head">
+                        Short Stock
+                    </li>
+                    <li class="box-list">
+                        
+                        <a href="product/product_details?P=">
+                            <div class="media">
+                                <div class="media-left box-img">
+                                    <img src="../../../public/assets/img/product/">
+                                </div>
+                                <div class="media-body box-text">
+                                     | 
+                                    <b style="color: #f44336;"> left</b>
+                                    <br>
+                                    
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </li>
+                    <li class="dropdown-foot">
+                        <a class="hover-bg-none" href="Report/shortStock">View all</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                    <span class="user-img float-start">
+                       
+                        <img alt="madpos" src="../../../public/assets/img/user/">
+                        
+                        <img alt="madpos" src="../../../public/assets/img/user/default.jpg">                                        
+                        
+                    </span><span class="caret"></span>
+                </a>
+                <div class="dropdown-menu topbar-dropdown-wrapper" role="menu">
+                    <ul class="dropdown-user-inner">
+                        <li>
+                            <div class="dd-userbox">
+                                <div class="dd-img">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/">
+                                    
+                                    <img alt="madpos" src="../../../public/assets/img/user/default.jpg">
+                                    
+                                </div>
+                                <div class="dd-info">
+                                    <h4>
+                                        
+                                    </h4>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li data-id="users" class="main"><a href="user/View_profile?U="><i class="icon-user mr10"></i> Profile</a></li>
+                        <li><a id="resetmodal" href=""><i class="icon-key mr10"></i> Change Password</a></li>
+                        <li class="divider"></li>
+                        <li data-id="configuration" class="main"><a href="configuration/siteSettings"><i class="icon-settings mr10"></i> Configuration</a></li>
+                        <li data-id="dashboard" class="main"><a href="login/logout"><i class="icon-logout mr10"></i> Sign Out</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+        </header>
+        <aside class="left-sidebar">
+            <div class="slimscroll-left-sidebar">
+                <nav class="sidebar-nav">
+                   <div class="sidebar-header text-center" style="padding: 25px 0; position: relative; top: 0;">
+                       <figure class="side-user-bg" style="background-image: url(assets/img/sidebar.jpg); opacity: 0.07; margin: 0; position: absolute; top: 0; right: 0; bottom: 0; left: 0; opacity: 0.2; background-size: cover; background-position: center center;">
+                            <img src="../../../public/assets/img/sidebar.jpg" alt="" class="" style="display: none;">
+                        </figure>
+                        <img src="../../../public/assets/img/user/" alt="profile image" style="width: 50px; height: 50px; border-radius: 50%; margin: 0 auto;">
+                        <h5 class="text-center font-weight-medium" style="color: #ffffff;padding-bottom:10px"></h5>
+                   </div>
+                    <ul>                      
+                        <li data-id="dashboard" id="dashboard" class="main">
+                            <a class="" href="Dashboard" aria-expanded="false">
+                                <i class="icon-grid"></i>
+                                <span class="">
+                                    Dashboard
+                                </span>
+                            </a>
+                        </li>
+                        <li data-id="dashboard" id="dashboard" class="main">
+                            <a class="" href="invoice/invoice_Pos" aria-expanded="false">
+                                <i class="icon-bag"></i>
+                                <span class="">
+                                    POS
+                                </span>
+                            </a>
+                        </li>
+                        <li data-id="customers" id="customers" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-emotsmile"></i>
+                                <span class="">
+                                    Customer
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="customer/customerList">Customers</a></li>
+                                <li><a href="customer/addCustomer">Add Customer</a></li>
+                                <li><a href="customer/newCustomer">New Customer</a></li>
+                            </ul>
+                        </li>
+                        <li data-id="sales" id="sales" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-diamond"></i>
+                                <span class="">
+                                    Sales
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="invoice/invoiceList">Sales Invoice</a></li>
+                                <!--<li><a href="invoice/returninvoiceList">Return Invoice</a></li>-->
+                                
+                                <li><a href="invoice/userSalesReport">Customer</a></li>
+                                
+                            </ul>
+                        </li>
+                        <li data-id="product" id="product" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-tag"></i>
+                                <span class="">
+                                    Product
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="product/viewCategory">Category</a></li>
+                                <li><a href="product/viewSubcategory">Sub Category</a></li>
+                                <li><a href="product/viewSize">Size</a></li>
+                                <li><a href="product/viewColor">Color</a></li>
+                                <li><a href="product/view_brand">Brand</a></li>
+                                <li><a href="product/productList">List Product</a></li>
+                                <li><a href="product/viewProduct">Add Product</a></li>
+                            </ul>
+                        </li><!--
+
+                        <li data-id="return" id="return" class="main">
+                            <a class="" href="return_Policy/returnPolicy" aria-expanded="false">
+                                <i class="icon-shuffle"></i>
+                                <span class="">
+                                    Return
+                                </span>
+                            </a>
+                        </li>-->
+                        <li data-id="report" id="report" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-chart"></i>
+                                <span class="">
+                                    Report
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="Report/todaysReport">Today's Report</a></li>
+                                <li><a href="Report/bestSelling">Best Selling Product</a></li>
+                                <li><a href="Report/shortStock">Short Stock</a></li>
+                                
+                                <li><a href="Report/userSalesReport">User Sales Report</a></li>
+                                
+                            </ul>
+                        </li>
+                        
+                        <li data-id="expense" id="expense" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-compass"></i>
+                                <span class="">
+                                    Expense
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="Expense/expenseCategory">Expense Category</a></li>
+                                <li><a href="Expense/expenseList">Expenses</a></li>
+                            </ul>
+                        </li>
+                        
+                        
+                        <li data-id="users" id="users" class="main">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="icon-user"></i>
+                                <span class="">
+                                    Users
+                                </span>
+                            </a>
+                            <ul aria-expanded="true" class="">
+                                <li><a href="user/listUser">List User</a></li>
+                                <li><a href="user/Add_User">Add User</a></li>
+                            </ul>
+                        </li>
+                        
+                        
+                        <li data-id="user-role" id="user-role" class="main">
+                            <a class="" href="user/listGroup" aria-expanded="false">
+                                <i class="icon-shuffle"></i>
+                                <span class="">
+                                    Users Role
+                                </span>
+                            </a>
+                        </li>
+                        
+                        
+                        <li data-id="backup" id="backup" class="main">
+                            <a class="" href="configuration/Backup_page" aria-expanded="false">
+                               <i class="icon-arrow-down-circle" aria-hidden="true"></i>
+                                <span class="">
+                                    Backup
+                                </span>
+                            </a>
+                        </li>
+                        
+                        
+                        <li data-id="configuration" id="configuration" class="main">
+                            <a class="" href="configuration/siteSettings" aria-expanded="false">
+                                <i class="icon-settings" aria-hidden="true"></i>
+                                <span class="">
+                                    Configuration
+                                </span>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+<div class="wrapper-page">
+    <span class="flashmessage"></span>
+    <div class="page-title">
+        <h1><i class="icon-notebook"></i>
+            Expense
+        </h1>
+    </div>
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="content_wrapper">
+                        <div class="table_banner clearfix">
+                            <h5 class="table_banner_title">
+                                Expense
+                            </h5>
+                            <div class="buy_button">
+                                <button id="expense" class="btn btn-custom float-end expense">Add Expense
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table_body text-start">
+                            <table id="expenseid" class="table table-condensed responsive table_custom" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Category Name
+                                        </th>
+                                        <th>
+                                            Expense Name
+                                        </th>
+                                        <th>
+                                            Amount
+                                        </th>
+                                        <th>
+                                            Expense Note
+                                        </th>
+                                        <th>
+                                            Expense By
+                                        </th>
+                                        <th>
+                                            Expense Date
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr>
+                                        <td>
+                                            
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td class="action-buttons">
+                                            <button type="button" data-id="" name="submit" class="exbutton">
+                                                <i class="icon-pencil"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="expensemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-primary">
+                <h4 class="modal-title" id="modal-label"><i class="icon-layers"></i>
+                    Expense
+                </h4>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" onclick="location.reload()" aria-label="Close"></button>
+            </div>
+            <form role="form" action="addExpenseData" id="addExpenseData" method="" enctype="multipart/form-data" accept-charset="UTF-8">
+                <div class="modal-body">
+                    <div class="row mb-2">
+                        <label for="inputMaxLength" class="col-md-3">Category Name</label>
+                        <div class="col-md-9">
+                            <select id="catid" name="catid" class="form-control" style="width: 100%" required>       
+                                <option value="">Select Here..</option>
+                                
+                                <option value=""></option>
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <label for="textareaMaxLength" class="col-md-3">Expense Name</label>
+                        <div class="col-md-9">
+                            <input type="text" name="exname" id="exname" class="form-control" value="" placeholder="Expense Name...">
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <label for="textareaMaxLength" class="col-md-3">Amount</label>
+                        <div class="col-md-9">
+                            <input type="number" name="examount" id="examount" class="form-control" value="" placeholder="Amount...">
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <label for="textareaMaxLength" class="col-md-3">Expense Note</label>
+                        <div class="col-md-9">
+                            <textarea class="form-control" id="exnote" name="exnote" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <label for="textareaMaxLength" class="col-md-3">Expense By</label>
+                        <div class="col-md-9">
+                            <input type="text" name="exby" id="exby" class="form-control" value="" placeholder="Expense By...">
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <label for="textareaMaxLength" class="col-md-3">Expense Date</label>
+                        <div class="col-md-9">
+                            <input type="text" name="exdate" id="exdate" class="form-control datetimepicker" value="" placeholder="Expense Date">
+                        </div>
+                    </div>
+                </div>
+                <div class="setmessage"></div>
+                <div class="modal-footer">
+                    <input type="hidden" name="exid" id="exid" value="">
+                    <button type="submit" name="submit" class="btn btn-custom">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".expense").click(function(e) {
+            e.preventDefault(e);
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('expensemodal')).show();
+        });
+    });
+    $(document).ready(function() {
+        $('#expenseid').dataTable({
+            "aaSorting": [
+                [5, 'desc']
+            ],
+            dom: 'Bfrtip',
+            buttons: [{
+                    extend: "copy",
+                    className: "datatable-buttons"
+                },
+                {
+                    extend: "csv",
+                    className: "datatable-buttons"
+                },
+                {
+                    extend: "excel",
+                    className: "datatable-buttons"
+                },
+                {
+                    extend: "pdf",
+                    className: "datatable-buttons"
+                },
+                {
+                    extend: "print",
+                    className: "datatable-buttons"
+                }
+            ]
+        });
+    });
+    $(document).ready(function() {
+        $(".exbutton").click(function(e) {
+            e.preventDefault(e);
+            // Get the record's ID via attribute  
+            var iid = $(this).attr('data-id');
+            $('#addExpenseData').trigger("reset");
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('expensemodal')).show();
+            $.ajax({
+                url: 'Expense/getExpenseById?id=' + iid,
+                method: 'GET',
+                data: '',
+                dataType: 'json',
+            }).done(function(response) {
+                // Populate the form fields with the data returned from server
+                $('#addExpenseData').find('[name="catid"]').val(response.exvalue.cat_id).end();
+                $('#addExpenseData').find('[name="exname"]').val(response.exvalue.expense_name).end();
+                $('#addExpenseData').find('[name="examount"]').val(response.exvalue.amount).end();
+                $('#addExpenseData').find('[name="exnote"]').val(response.exvalue.note).end();
+                $('#addExpenseData').find('[name="exby"]').val(response.exvalue.expense_by).end();
+                $('#addExpenseData').find('[name="exdate"]').val(response.exvalue.expense_date).end();
+                $('#addExpenseData').find('[name="exid"]').val(response.exvalue.id).end();
+            });
+        });
+    });
+</script>
+        <!--Reset password validation modal-->
+		<div class="modal fade" id="reset" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                            <div class="modal-header modal-primary">
+								<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+								<h4 class="modal-title" id="modal-label">Reset Password</h4>
+							</div>	
+                          <div class="message"> </div>  
+			            <form role="form" action="user/addResetPassword" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+								<div class="form-group">
+                                <label for="oldPassword" class="control-label">Old Password</label>
+                                <input type="password" name="oldpass" class="form-control" id="oldPassword" value="" placeholder="" required >
+                                </div>
+								<div class="form-group">
+                                <label for="newPassword" class="control-label">New Password</label>
+                                <input type="password" name="newpass" class="form-control" id="newPassword" value="" placeholder="" required >
+                                </div>
+								<div class="form-group">
+                                <label for="confirmNewPass" class="control-label">Confirm Password</label>
+                                <input type="password" name="confirmpass" class="form-control" id="confirmNewPass" value="" placeholder="" required >
+                                </div>													
+                            </div>
+                            <div class="modal-footer">
+                                <button id="" type="submit" name="submit" class="btn btn-custom">Ok</button>
+                                <button type="button" class="btn btn-custom" onclick="location.reload()" data-bs-dismiss="modal">Close</button>
+                            </div>
+						</form>
+                </div>
+            </div>
+        </div> 
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#resetmodal").click(function (e) {
+                e.preventDefault(e);
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('reset')).show();
+            });
+        });
+        </script>          
+        <div class="footer">
+        	© 2018 MadPos by madcoderz.com
+        </div>
+
+    </div>
+ 
+    <script src="../../../public/assets/js/vendor/modernizr-3.5.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="../../../public/assets/js/bootstrap5-bridge.js"></script>
+    <script src="../../../public/assets/js/vendor/select2.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+    <script src="../../../public/assets/js/vendor/jquery.magnific-popup.min.js"></script> 
+        
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.11/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.11/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.1/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    <script src="../../../public/assets/js/main.js"></script>
+    <script src="../../../public/assets/js/jquery.PrintArea.js"></script>
+    
+    <script src="../../../public/assets/js/return/return.js"></script>
+    
+    <script src="../../../public/assets/js/jquery-jvectormap-2.0.3.min.js"></script>
+    <script src="../../../public/assets/js/jquery-jvectormap-world-mill.js"></script>
+    <!--Dashboard chart JS-->   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js" integrity="sha256-UGwvyUFH6Qqn0PSyQVw4q3vIX0wV1miKTracNJzAWPc=" crossorigin="anonymous"></script>    
+    
+    <script src="../../../public/assets/js/custom/customer.js"></script>
+    
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js" ></script>
+    <script>
+    //initiate the plugin and pass the id of the div containing gallery images
+    $("#zoom_03").elevateZoom({
+        zoomType: 'lens',
+        lensShape: 'square',
+        lensSize: '250',
+        easing: true,
+        cursor: 'pointer',
+        galleryActiveClass: 'active',
+        zoomWindowPosition: 11,
+        gallery: 'gallery_01',
+        borderSize: 0,
+        containLensZoom: true,
+        responsive: true,
+        lensShape: 'round'
+    });
+
+    //pass the images to Fancybox
+    $("#zoom_03").bind("click", function(e) {
+        $('#zoom_03').data('elevateZoom');
+        return false;
+    });
+    </script>     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script type="text/javascript">
+    // updating the view with notifications using ajax
+    function load_unseen_notification(id = '') {
+        $.ajax({
+            url: "user/set_notification",
+            method: "POST",
+            data: { id: id }
+        });
+    }
+
+    $(document).on('click', '.notification-count', function() {
+        
+        load_unseen_notification('');
+        $(this).addClass('notification-count-changed');
+    });
+    </script>	
+</body>
+
+</html>
