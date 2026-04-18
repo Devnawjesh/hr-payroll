@@ -15,6 +15,8 @@ class RolePermissionSeeder extends Seeder
     {
         $superAdmin = Role::query()->where('slug', 'super-admin')->first();
         $hrManager = Role::query()->where('slug', 'hr-manager')->first();
+        $departmentHead = Role::query()->where('slug', 'department-head')->first();
+        $supervisor = Role::query()->where('slug', 'supervisor')->first();
         $teamLead = Role::query()->where('slug', 'team-lead')->first();
         $employee = Role::query()->where('slug', 'employee')->first();
 
@@ -30,6 +32,10 @@ class RolePermissionSeeder extends Seeder
                     'attendance',
                     'leave',
                     'payroll',
+                    'bonus',
+                    'loan',
+                    'deduction',
+                    'provident_fund',
                     'holiday',
                     'department',
                     'designation',
@@ -37,10 +43,59 @@ class RolePermissionSeeder extends Seeder
                     'training',
                     'award',
                     'announcement',
+                    'project',
+                    'team',
+                    'task',
+                    'note',
+                    'client',
+                    'estimate',
+                    'invoice',
+                    'billing',
                     'report',
                     'notification',
                     'file',
                     'expense',
+                    'audit',
+                    'settings',
+                ])->pluck('id')
+            );
+        }
+
+        if ($departmentHead) {
+            $departmentHead->permissions()->sync(
+                Permission::query()->whereIn('group_name', [
+                    'dashboard',
+                    'employee',
+                    'attendance',
+                    'leave',
+                    'team',
+                    'task',
+                    'project',
+                    'announcement',
+                    'report',
+                    'file',
+                    'expense',
+                    'notification',
+                ])->pluck('id')
+            );
+        }
+
+        if ($supervisor) {
+            $supervisor->permissions()->sync(
+                Permission::query()->whereIn('slug', [
+                    'dashboard.view',
+                    'employee.view',
+                    'employee.view-profile',
+                    'employee.view-hierarchy',
+                    'attendance.view',
+                    'attendance.approve-time-change',
+                    'leave.view',
+                    'leave.approve',
+                    'task.view',
+                    'task.assign',
+                    'task.comment',
+                    'report.view',
+                    'notification.view',
                 ])->pluck('id')
             );
         }
@@ -51,6 +106,7 @@ class RolePermissionSeeder extends Seeder
                     'dashboard',
                     'team',
                     'task',
+                    'project',
                     'attendance',
                     'leave',
                     'announcement',
@@ -70,11 +126,13 @@ class RolePermissionSeeder extends Seeder
                     'leave.view',
                     'task.view',
                     'task.comment',
+                    'project.view',
                     'note.view-private',
                     'note.create-private',
                     'note.update-private',
                     'note.delete-private',
                     'file.view',
+                    'file.preview',
                     'file.comment',
                     'notification.view',
                 ])->pluck('id')

@@ -39,7 +39,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['employee_id', 'effective_from']);
-            $table->index(['salary_template_id', 'effective_from']);
+            $table->index(['salary_template_id', 'effective_from'], 'emp_sal_tpl_eff_idx');
         });
 
         Schema::create('bonuses', function (Blueprint $table) {

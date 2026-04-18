@@ -79,8 +79,8 @@ return new class extends Migration
             $table->foreignId('recorded_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
-            $table->index(['employee_id', 'transaction_date']);
-            $table->index(['transaction_type', 'transaction_date']);
+            $table->index(['employee_id', 'transaction_date'], 'pf_txn_emp_date_idx');
+            $table->index(['transaction_type', 'transaction_date'], 'pf_txn_type_date_idx');
             $table->index('payroll_run_id');
         });
 

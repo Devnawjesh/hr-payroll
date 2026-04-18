@@ -1,7 +1,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{ $title ?? 'madPOS | madCoderz' }}</title>
+    <title>{{ $title ?? 'ZerithonHR' }}</title>
     <meta name="description" content="{{ $metaDescription ?? '' }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="{{ asset(config('madpos_ui.favicon')) }}">

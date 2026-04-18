@@ -7,12 +7,9 @@
         @include('partials.template.topbar')
         @include('partials.template.sidebar')
         @yield('content')
-        <!-- /.page-content  -->
         @include('partials.template.footer')
-
     </div>
- 
-@include('partials.template.footer')	
+    @include('partials.template.scripts')
 </body>
 
 </html>

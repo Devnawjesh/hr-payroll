@@ -16,6 +16,8 @@ class RoleSeeder extends Seeder
         $roles = [
             ['name' => 'Super Admin', 'description' => 'Full system access'],
             ['name' => 'HR Manager', 'description' => 'HR and payroll management'],
+            ['name' => 'Department Head', 'description' => 'Department-level management and approvals'],
+            ['name' => 'Supervisor', 'description' => 'Direct reporting manager approvals'],
             ['name' => 'Team Lead', 'description' => 'Team and task oversight'],
             ['name' => 'Employee', 'description' => 'Self-service access'],
         ];

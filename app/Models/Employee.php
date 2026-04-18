@@ -25,6 +25,11 @@ class Employee extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function departmentsAsHead(): HasMany
+    {
+        return $this->hasMany(Department::class, 'head_employee_id');
+    }
+
     public function designation(): BelongsTo
     {
         return $this->belongsTo(Designation::class);

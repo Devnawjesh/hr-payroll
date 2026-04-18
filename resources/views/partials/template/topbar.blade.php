@@ -3,30 +3,27 @@
     <div class="noscriptmsg">We're sorry, but This Software doesn't work properly without JavaScript enabled.</div>
 </noscript>
 
-<body>
+<header class="topbar clearfix">
+    <nav class="navbar navbar-light app-topbar-nav">
+        <div class="app-topbar-left">
+            <div class="logo-container" style="min-width: 210px; height: 50px; background-color: rgba(255, 255, 255, 1); text-align:center">
+                <a class="navbar-brand text-start" href="#">
+                    <img src="{{ asset(config('madpos_ui.logo')) }}" alt="Zerithon" style="height: 30px !important;">
+                </a>
+            </div>
 
-    <div class="wrapper-main">
-        <header class="topbar clearfix">
-            <nav class="navbar navbar-light app-topbar-nav">
-                <div class="app-topbar-left">
-                    <div class="logo-container" style="min-width: 210px; height: 50px; background-color: rgba(255, 255, 255, 1); text-align:center">
-                        <a class="navbar-brand text-start" href="#">
-                            <img src="assets/img/logo.png" alt="HR Payroll" style="height: 30px !important;">
-                        </a>
-                    </div>
+            <ul class="navbar-nav me-2">
+                <li class="d-none d-md-block">
+                    <a href="#" class="sidebar-toggle"><i class="icon-menu"></i></a>
+                </li>
+                <li class="d-md-none">
+                    <a href="#" id="sidebar-toggle"><i class="icon-menu"></i></a>
+                </li>
+            </ul>
+        </div>
 
-                    <ul class="navbar-nav me-2">
-                        <li class="d-none d-md-block">
-                            <a href="#" class="sidebar-toggle"><i class="icon-menu"></i></a>
-                        </li>
-                        <li class="d-md-none">
-                            <a href="#" id="sidebar-toggle"><i class="icon-menu"></i></a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="app-topbar-right">
-                    <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row;">
+        <div class="app-topbar-right">
+            <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row;">
 
                         <li class="dropdown d-none d-sm-block">
                             <a href="#" class="dropdown-toggle topbar-hold-trigger" data-bs-toggle="dropdown" role="button" aria-expanded="false" title="Notifications">
@@ -83,7 +80,7 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                                 <span class="user-img float-start">
-                                    <img alt="user" src="assets/img/user/default.jpg">
+                                    <img alt="user" src="{{ asset('assets/img/user/default.jpg') }}">
                                 </span>
                             </a>
 
@@ -92,26 +89,31 @@
                                     <li>
                                         <div class="dd-userbox">
                                             <div class="dd-img">
-                                                <img alt="user" src="assets/img/user/default.jpg">
+                                                <img alt="user" src="{{ asset('assets/img/user/default.jpg') }}">
                                             </div>
                                             <div class="dd-info">
-                                                <h4>HR Payroll User</h4>
-                                                <p>user@example.com</p>
+                                                <h4>{{ auth()->user()->name ?? 'User' }}</h4>
+                                                <p>{{ auth()->user()->email ?? '' }}</p>
                                             </div>
                                         </div>
                                     </li>
 
                                     <li class="divider"></li>
-                                    <li><a href="#"><i class="icon-lock mr10"></i> Change Password</a></li>
+                                    <li><a href="{{ route('password.request') }}"><i class="icon-lock mr10"></i> Change Password</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="#"><i class="icon-logout mr10"></i> Sign Out</a></li>
+                                    <li>
+                                        <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:block; margin:0;">
+                                            @csrf
+                                            <button type="submit" style="border:none; background:none; width:100%; text-align:left; padding:10px 20px; color:inherit;">
+                                                <i class="icon-logout mr10"></i> Sign Out
+                                            </button>
+                                        </form>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
 
-                    </ul>
-                </div>
-            </nav>
-        </header>
-    </div>
-</body>
+            </ul>
+        </div>
+    </nav>
+</header>
