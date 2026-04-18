@@ -127,7 +127,7 @@
                 </li>
 
                 <li class="main">
-                    <a href="#">
+                    <a href="{{ route('settings.edit') }}">
                         <i class="icon-settings"></i>
                         <span>Settings</span>
                     </a>

@@ -7,7 +7,7 @@
     <meta name="description" content="{{ $metaDescription ?? 'Zerithon authentication' }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ $title ?? 'ZerithonLabs' }}</title>
+    <title>{{ $title ?? config('app.name', 'ZerithonHR') }}</title>
     @php
         $assetsBase = config('madpos_ui.assets_base', 'assets');
         $favicon = config('madpos_ui.favicon', 'assets/img/zerithon-logo.png');

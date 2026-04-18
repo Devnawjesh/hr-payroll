@@ -8,7 +8,7 @@
         <div class="app-topbar-left">
             <div class="logo-container" style="min-width: 210px; height: 50px; background-color: rgba(255, 255, 255, 1); text-align:center">
                 <a class="navbar-brand text-start" href="#">
-                    <img src="{{ asset(config('madpos_ui.logo')) }}" alt="Zerithon" style="height: 30px !important;">
+                    <img src="{{ asset(config('madpos_ui.logo')) }}" alt="Zerithon">
                 </a>
             </div>
 
@@ -102,11 +102,11 @@
                                     <li><a href="{{ route('password.request') }}"><i class="icon-lock mr10"></i> Change Password</a></li>
                                     <li class="divider"></li>
                                     <li>
-                                        <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:block; margin:0;">
+                                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="icon-logout mr10"></i> Sign Out
+                                        </a>
+                                        <form id="logout-form" method="POST" action="{{ route('logout') }}" class="d-none">
                                             @csrf
-                                            <button type="submit" style="border:none; background:none; width:100%; text-align:left; padding:10px 20px; color:inherit;">
-                                                <i class="icon-logout mr10"></i> Sign Out
-                                            </button>
                                         </form>
                                     </li>
                                 </ul>

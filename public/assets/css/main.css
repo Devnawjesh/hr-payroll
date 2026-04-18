@@ -1,3 +1,9 @@
+/*
+* Zerithon HR Payroll - A comprehensive HR and payroll management system built with Laravel.
+* Author: Zerithon Labs
+* Author Name: Nawjesh Soyeb
+* Copyright (c) 2026 Zerithon Labs. All rights reserved.
+*/
 /* head
 @import url("https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,600,700"); */
 /* general */
@@ -462,7 +468,40 @@ h1.site_name {
     }
 }
 
-
+    .brand-upload-box {
+        border: 1px dashed #cfd8dc;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8fafc;
+    }
+    .brand-upload-box .label {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+        color: #fff;
+        background: #2f80ed;
+        margin-bottom: 8px;
+    }
+    .brand-picker-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .brand-file-name {
+        font-size: 12px;
+        color: #546e7a;
+    }
+    .brand-file-input {
+        position: absolute !important;
+        left: -9999px !important;
+        top: auto !important;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
 /* topbar */
 
 .topbar {
@@ -477,10 +516,9 @@ h1.site_name {
 
 .navbar-brand {
     width: 185px;
-    margin-right: 10px;
     overflow: hidden;
     line-height: 40px;
-    padding: 8px 0px 8px 30px;
+    padding: 0px;
 }
 
 .navbar-brand img {
