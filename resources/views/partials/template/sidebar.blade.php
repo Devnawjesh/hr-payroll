@@ -3,6 +3,7 @@
         <nav class="sidebar-nav">
             @php
                 $isDashboard = request()->routeIs('dashboard');
+                $isEmployees = request()->routeIs('departments.*');
                 $isUserManagement = request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*');
                 $isSettings = request()->routeIs('settings.*');
             @endphp
@@ -30,15 +31,15 @@
                     </a>
                 </li>
 
-                <li id="menu-employees" data-id="menu-employees" class="main">
-                    <a class="has-arrow" href="#">
+                <li id="menu-employees" data-id="menu-employees" class="main {{ $isEmployees ? 'active' : '' }}">
+                    <a class="has-arrow" href="#" aria-expanded="{{ $isEmployees ? 'true' : 'false' }}">
                         <i class="icon-user"></i>
                         <span>Employees</span>
                     </a>
-                    <ul aria-expanded="true">
+                    <ul aria-expanded="{{ $isEmployees ? 'true' : 'false' }}">
                         <li><a href="#">Employee List</a></li>
                         <li><a href="#">Add Employee</a></li>
-                        <li><a href="#">Departments</a></li>
+                        <li class="{{ request()->routeIs('departments.index') ? 'active' : '' }}"><a href="{{ route('departments.index') }}">Departments</a></li>
                         <li><a href="#">Designations</a></li>
                     </ul>
                 </li>
