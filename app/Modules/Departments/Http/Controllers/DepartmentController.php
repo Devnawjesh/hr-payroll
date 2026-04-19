@@ -25,7 +25,7 @@ class DepartmentController extends Controller
         $filters = [
             'q' => trim((string) $request->input('q')),
             'status' => (string) $request->input('status', ''),
-            'per_page' => max(10, min(100, (int) $request->input('per_page', 20))),
+                'per_page' => max(10, min(100, (int) $request->input('per_page', 20))),
         ];
 
         return view('hr.departments.index', [
@@ -38,7 +38,7 @@ class DepartmentController extends Controller
     {
         return view('hr.departments.form', [
             'mode' => 'create',
-            'headCandidates' => $this->departmentRepository->listHeadCandidates(),
+                'headCandidates' => $this->departmentRepository->listHeadCandidates(),
         ]);
     }
 

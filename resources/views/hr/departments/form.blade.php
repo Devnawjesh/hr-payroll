@@ -29,6 +29,7 @@
                                 <input type="text" name="code" class="form-control" value="{{ old('code', $department->code ?? '') }}" maxlength="30">
                             </div>
 
+
                             <div class="col-md-6 form-group mb-3">
                                 <label>Department Head</label>
                                 <select name="head_employee_id" class="form-control">
@@ -42,6 +43,8 @@
                                 </select>
                             </div>
 
+
+
                             <div class="col-md-6 form-group mb-3">
                                 <label>Status</label>
                                 @php($isActive = (int) old('is_active', isset($department) ? (int) $department->is_active : 1))
@@ -51,16 +54,16 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-12 form-group mb-3">
-                                <label>Description</label>
-                                <textarea name="description" class="form-control" rows="3">{{ old('description', $department->description ?? '') }}</textarea>
-                            </div>
+                                    <div class="col-md-12 form-group mb-3">
+                                        <label>Description</label>
+                                        <textarea name="description" class="form-control" rows="3">{{ old('description', $department->description ?? '') }}</textarea>
+                                    </div>
                         </div>
 
-                        <button class="btn btn-custom" type="submit">
-                            <i class="{{ $mode === 'edit' ? 'icon-check' : 'icon-plus' }}"></i>
-                            {{ $mode === 'edit' ? 'Update Department' : 'Create Department' }}
-                        </button>
+                                <button class="btn btn-custom" type="submit">
+                                    <i class="{{ $mode === 'edit' ? 'icon-check' : 'icon-plus' }}"></i>
+                                    {{ $mode === 'edit' ? 'Update Department' : 'Create Department' }}
+                                </button>
                         <a href="{{ route('departments.index') }}" class="btn btn-custom-default"><i class="icon-arrow-left"></i> Back</a>
                     </form>
                 </div>

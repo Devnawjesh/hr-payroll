@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Modules\Settings\Http\Controllers\SettingsController;
 use App\Modules\Departments\Http\Controllers\DepartmentController;
+use App\Modules\Designations\Http\Controllers\DesignationController;
 use App\Modules\Users\Http\Controllers\PermissionController;
 use App\Modules\Users\Http\Controllers\RoleController;
 use App\Modules\Users\Http\Controllers\UserController;
@@ -46,6 +47,14 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
         Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
         Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+
+
+        Route::get('/designations', [DesignationController::class, 'index'])->name('designations.index');
+        Route::get('/designations/create', [DesignationController::class, 'create'])->name('designations.create');
+        Route::post('/designations', [DesignationController::class, 'store'])->name('designations.store');
+        Route::get('/designations/{designation}/edit', [DesignationController::class, 'edit'])->name('designations.edit');
+        Route::put('/designations/{designation}', [DesignationController::class, 'update'])->name('designations.update');
+        Route::delete('/designations/{designation}', [DesignationController::class, 'destroy'])->name('designations.destroy');
 
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');

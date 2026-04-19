@@ -3,7 +3,7 @@
         <nav class="sidebar-nav">
             @php
                 $isDashboard = request()->routeIs('dashboard');
-                $isEmployees = request()->routeIs('departments.*');
+                $isEmployees = request()->routeIs('departments.*') || request()->routeIs('designations.*');
                 $isUserManagement = request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*');
                 $isSettings = request()->routeIs('settings.*');
             @endphp
@@ -39,8 +39,8 @@
                     <ul aria-expanded="{{ $isEmployees ? 'true' : 'false' }}">
                         <li><a href="#">Employee List</a></li>
                         <li><a href="#">Add Employee</a></li>
-                        <li class="{{ request()->routeIs('departments.index') ? 'active' : '' }}"><a href="{{ route('departments.index') }}">Departments</a></li>
-                        <li><a href="#">Designations</a></li>
+                        <li class="{{ request()->routeIs('departments.index') || request()->routeIs('departments.edit') ? 'active' : '' }}"><a href="{{ route('departments.index') }}">Departments</a></li>
+                        <li class="{{ request()->routeIs('designations.index') || request()->routeIs('designations.edit') ? 'active' : '' }}"><a href="{{ route('designations.index') }}">Designations</a></li>
                     </ul>
                 </li>
 

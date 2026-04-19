@@ -3,8 +3,8 @@
 @section('content')
 <div class="wrapper-page">
     <div class="page-title d-flex justify-content-between align-items-center">
-        <h1><i class="icon-organization"></i> Departments</h1>
-        <a href="{{ route('departments.create') }}" class="btn btn-custom"><i class="icon-plus"></i> Add Department</a>
+        <h1><i class="icon-badge"></i> Designations</h1>
+        <a href="{{ route('designations.create') }}" class="btn btn-custom"><i class="icon-plus"></i> Add Designation</a>
     </div>
 
     @include('partials.flash')
@@ -14,14 +14,24 @@
             <div class="card no-border">
                 <div class="content_wrapper" style="padding:20px;">
                     <form method="GET" class="row g-2 mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" name="q" value="{{ $filters['q'] }}" class="form-control" placeholder="Search name/code/description">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="department_id" class="form-control">
+                                <option value="0">All Departments</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" {{ (int) $filters['department_id'] === $department->id ? 'selected' : '' }}>
+                                        {{ $department->name }}{{ $department->code ? ' ('.$department->code.')' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-2">
                             <select name="status" class="form-control">
                                 <option value="">All Status</option>
                                 <option value="active" {{ $filters['status'] === 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -31,9 +41,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4 d-flex gap-2">
+                        <div class="col-md-2 d-flex gap-2">
                             <button class="btn btn-custom" type="submit"><i class="icon-magnifier"></i> Filter</button>
-                                <a href="{{ route('departments.index') }}" class="btn btn-custom-default"><i class="icon-refresh"></i> Reset</a>
+                            <a href="{{ route('designations.index') }}" class="btn btn-custom-default"><i class="icon-refresh"></i></a>
                         </div>
                     </form>
 
@@ -43,56 +53,47 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Code</th>
-                                    <th>Head</th>
+                                    <th>Department</th>
                                     <th>Employees</th>
-                                    <th>Designations</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($departments as $department)
+                                @forelse($designations as $designation)
                                     <tr>
-                                        <td>{{ $department->name }}</td>
-                                        <td>{{ $department->code ?: '-' }}</td>
+                                        <td>{{ $designation->name }}</td>
+                                        <td>{{ $designation->code ?: '-' }}</td>
+                                        <td>{{ $designation->department?->name ?? '-' }}</td>
+                                        <td>{{ $designation->employees_count }}</td>
                                         <td>
-                                            @if($department->head)
-                                                {{ trim($department->head->first_name.' '.$department->head->last_name) }}
-                                                <div class="small text-muted">{{ $department->head->employee_code }}</div>
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td>{{ $department->employees_count }}</td>
-                                        <td>{{ $department->designations_count }}</td>
-                                        <td>
-                                            @if($department->is_active)
+                                            @if($designation->is_active)
                                                 <span class="badge bg-success">Active</span>
                                             @else
                                                 <span class="badge bg-secondary">Inactive</span>
                                             @endif
                                         </td>
                                         <td class="action-buttons">
-                                            <a href="{{ route('departments.edit', $department) }}" title="Edit Department">
+                                            <a href="{{ route('designations.edit', $designation) }}" title="Edit Designation">
                                                 <i class="icon-pencil"></i>
                                             </a>
-                                            <form method="POST" action="{{ route('departments.destroy', $department) }}" onsubmit="return confirm('Delete this department?');" style="display:inline;">
+                                            <form method="POST" action="{{ route('designations.destroy', $designation) }}" style="display:inline;" onsubmit="return confirm('Delete this designation?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" title="Delete Department"><i class="icon-trash"></i></button>
+                                                <button type="submit" title="Delete Designation"><i class="icon-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center">No departments found.</td>
+                                        <td colspan="6" class="text-center">No designations found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
-                            </table>
+                        </table>
                     </div>
 
-                    {{ $departments->links('pagination::bootstrap-5') }}
+                    {{ $designations->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
