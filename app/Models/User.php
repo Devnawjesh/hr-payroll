@@ -17,6 +17,13 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Cached permission slugs for current request lifecycle.
+     *
+     * @var array<int, string>|null
+     */
+    protected ?array $resolvedPermissionSlugs = null;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -80,11 +87,44 @@ class User extends Authenticatable
 
     public function hasPermission(string $permissionSlug): bool
     {
-        return $this->roles()
-            ->whereHas('permissions', function ($query) use ($permissionSlug): void {
-                $query->where('slug', $permissionSlug);
-            })
-            ->exists();
+        return in_array($permissionSlug, $this->permissionSlugs(), true);
+    }
+
+    /**
+     * @param array<int, string> $permissionSlugs
+     */
+    public function hasAnyPermission(array $permissionSlugs): bool
+    {
+        $available = $this->permissionSlugs();
+        foreach ($permissionSlugs as $permissionSlug) {
+            if (in_array($permissionSlug, $available, true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function permissionSlugs(): array
+    {
+        if ($this->resolvedPermissionSlugs !== null) {
+            return $this->resolvedPermissionSlugs;
+        }
+
+        $slugs = $this->roles()
+            ->with('permissions:id,slug')
+            ->get()
+            ->flatMap(fn (Role $role) => $role->permissions->pluck('slug'))
+            ->unique()
+            ->values()
+            ->all();
+
+        $this->resolvedPermissionSlugs = $slugs;
+
+        return $this->resolvedPermissionSlugs;
     }
 
     public function isActive(): bool

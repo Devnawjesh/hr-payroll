@@ -34,48 +34,56 @@ Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('throttle:6,1')->name('password.email');
 
 Route::middleware('auth')->group(function (): void {
-    Route::view('/dashboard', 'hr.dashboard.dashboard')->name('dashboard');
-    Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
-    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::view('/dashboard', 'hr.dashboard.dashboard')->middleware('permission:dashboard.view')->name('dashboard');
+    Route::get('/settings', [SettingsController::class, 'edit'])->middleware('permission:settings.view')->name('settings.edit');
+    Route::put('/settings', [SettingsController::class, 'update'])->middleware('permission:settings.update')->name('settings.update');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     Route::middleware('role.any:super-admin,hr-manager')->group(function (): void {
+        Route::prefix('departments')->name('departments.')->group(function (): void {
+            Route::get('/', [DepartmentController::class, 'index'])->middleware('permission:department.view')->name('index');
+            Route::get('/create', [DepartmentController::class, 'create'])->middleware('permission:department.create')->name('create');
+            Route::post('/', [DepartmentController::class, 'store'])->middleware('permission:department.create')->name('store');
+            Route::get('/{department}/edit', [DepartmentController::class, 'edit'])->middleware('permission:department.update')->name('edit');
+            Route::put('/{department}', [DepartmentController::class, 'update'])->middleware('permission:department.update')->name('update');
+            Route::delete('/{department}', [DepartmentController::class, 'destroy'])->middleware('permission:department.delete')->name('destroy');
+        });
 
-        Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
-        Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
-        Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
-        Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
-        Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
-        Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+        Route::prefix('designations')->name('designations.')->group(function (): void {
+            Route::get('/', [DesignationController::class, 'index'])->middleware('permission:designation.view')->name('index');
+            Route::get('/create', [DesignationController::class, 'create'])->middleware('permission:designation.create')->name('create');
+            Route::post('/', [DesignationController::class, 'store'])->middleware('permission:designation.create')->name('store');
+            Route::get('/{designation}/edit', [DesignationController::class, 'edit'])->middleware('permission:designation.update')->name('edit');
+            Route::put('/{designation}', [DesignationController::class, 'update'])->middleware('permission:designation.update')->name('update');
+            Route::delete('/{designation}', [DesignationController::class, 'destroy'])->middleware('permission:designation.delete')->name('destroy');
+        });
 
+        Route::prefix('users')->name('users.')->group(function (): void {
+            Route::get('/', [UserController::class, 'index'])->middleware('permission:role.assign,role.view')->name('index');
+            Route::get('/create', [UserController::class, 'create'])->middleware('permission:role.assign')->name('create');
+            Route::post('/', [UserController::class, 'store'])->middleware('permission:role.assign')->name('store');
+            Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:role.assign')->name('edit');
+            Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:role.assign')->name('update');
+            Route::get('/{user}/approval', [UserController::class, 'approval'])->middleware('permission:role.assign')->name('approval');
+            Route::post('/{user}/approval', [UserController::class, 'approveOrReject'])->middleware('permission:role.assign')->name('approval.process');
+        });
 
-        Route::get('/designations', [DesignationController::class, 'index'])->name('designations.index');
-        Route::get('/designations/create', [DesignationController::class, 'create'])->name('designations.create');
-        Route::post('/designations', [DesignationController::class, 'store'])->name('designations.store');
-        Route::get('/designations/{designation}/edit', [DesignationController::class, 'edit'])->name('designations.edit');
-        Route::put('/designations/{designation}', [DesignationController::class, 'update'])->name('designations.update');
-        Route::delete('/designations/{designation}', [DesignationController::class, 'destroy'])->name('designations.destroy');
+        Route::prefix('roles')->name('roles.')->group(function (): void {
+            Route::get('/', [RoleController::class, 'index'])->middleware('permission:role.view')->name('index');
+            Route::get('/create', [RoleController::class, 'create'])->middleware('permission:role.create')->name('create');
+            Route::post('/', [RoleController::class, 'store'])->middleware('permission:role.create')->name('store');
+            Route::get('/{role}/edit', [RoleController::class, 'edit'])->middleware('permission:role.update')->name('edit');
+            Route::put('/{role}', [RoleController::class, 'update'])->middleware('permission:role.update')->name('update');
+            Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('permission:role.assign')->name('permissions');
+            Route::post('/{role}/permissions', [RoleController::class, 'syncPermissions'])->middleware('permission:role.assign')->name('permissions.sync');
+        });
 
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::get('/users/{user}/approval', [UserController::class, 'approval'])->name('users.approval');
-        Route::post('/users/{user}/approval', [UserController::class, 'approveOrReject'])->name('users.approval.process');
-
-        Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-        Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
-        Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
-        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
-        Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
-        Route::get('/roles/{role}/permissions', [RoleController::class, 'permissions'])->name('roles.permissions');
-        Route::post('/roles/{role}/permissions', [RoleController::class, 'syncPermissions'])->name('roles.permissions.sync');
-
-        Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
-        Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
-        Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
-        Route::get('/permissions/{permission}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
-        Route::put('/permissions/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
+        Route::prefix('permissions')->name('permissions.')->group(function (): void {
+            Route::get('/', [PermissionController::class, 'index'])->middleware('permission:role.view')->name('index');
+            Route::get('/create', [PermissionController::class, 'create'])->middleware('permission:role.update')->name('create');
+            Route::post('/', [PermissionController::class, 'store'])->middleware('permission:role.update')->name('store');
+            Route::get('/{permission}/edit', [PermissionController::class, 'edit'])->middleware('permission:role.update')->name('edit');
+            Route::put('/{permission}', [PermissionController::class, 'update'])->middleware('permission:role.update')->name('update');
+        });
     });
 });

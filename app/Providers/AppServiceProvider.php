@@ -23,6 +23,35 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        View::composer('partials.template.sidebar', function ($view): void {
+            $user = auth()->user();
+            $can = fn (string $permission): bool => $user?->hasPermission($permission) ?? false;
+            $canAny = fn (array $permissions): bool => $user?->hasAnyPermission($permissions) ?? false;
+
+            $view->with('sidebarState', [
+                'isDashboard' => request()->routeIs('dashboard'),
+                'isEmployees' => request()->routeIs('departments.*') || request()->routeIs('designations.*'),
+                'isUserManagement' => request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*'),
+                'isSettings' => request()->routeIs('settings.*'),
+
+                'canDepartmentView' => $can('department.view'),
+                'canDepartmentCreate' => $can('department.create'),
+                'canDesignationView' => $can('designation.view'),
+                'canDesignationCreate' => $can('designation.create'),
+
+                'canRoleView' => $can('role.view'),
+                'canRoleCreate' => $can('role.create'),
+                'canRoleUpdate' => $can('role.update'),
+                'canRoleAssign' => $can('role.assign'),
+
+                'canUserList' => $canAny(['role.view', 'role.assign']),
+                'canUserCreate' => $can('role.assign'),
+                'canPermissionsMenu' => $can('role.update'),
+                'canUserManagementMenu' => $canAny(['role.view', 'role.create', 'role.update', 'role.assign']),
+                'canSettingsView' => $can('settings.view'),
+            ]);
+        });
+
         try {
             if (! Schema::hasTable('system_settings')) {
                 return;
