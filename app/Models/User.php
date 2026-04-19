@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,7 +24,12 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'account_status',
+        'approved_by',
+        'approved_at',
+        'rejected_reason',
     ];
 
     /**
@@ -46,12 +52,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'approved_at' => 'datetime',
         ];
     }
 
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class);
+    }
+
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function roles(): BelongsToMany
@@ -73,5 +85,10 @@ class User extends Authenticatable
                 $query->where('slug', $permissionSlug);
             })
             ->exists();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->account_status === 'active';
     }
 }

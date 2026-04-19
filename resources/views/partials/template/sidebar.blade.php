@@ -1,6 +1,11 @@
 <aside class="left-sidebar">
     <div class="slimscroll-left-sidebar">
         <nav class="sidebar-nav">
+            @php
+                $isDashboard = request()->routeIs('dashboard');
+                $isUserManagement = request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*');
+                $isSettings = request()->routeIs('settings.*');
+            @endphp
             <div class="sidebar-header text-center" style="padding: 25px 0; position: relative; top: 0;">
                 <figure class="side-user-bg" style="background-image: url('assets/img/sidebar.jpg'); margin: 0; position: absolute; top: 0; right: 0; bottom: 0; left: 0; opacity: 0.2; background-size: cover; background-position: center center;">
                     <img src="assets/img/sidebar.jpg" alt="" style="display: none;">
@@ -18,14 +23,14 @@
             </div>
 
             <ul class="sidebar-menu">
-                <li class="main active">
-                    <a href="#">
+                <li id="menu-dashboard" data-id="menu-dashboard" class="main {{ $isDashboard ? 'active' : '' }}">
+                    <a href="{{ route('dashboard') }}">
                         <i class="icon-grid"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
 
-                <li class="main">
+                <li id="menu-employees" data-id="menu-employees" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-user"></i>
                         <span>Employees</span>
@@ -38,7 +43,7 @@
                     </ul>
                 </li>
 
-                <li class="main">
+                <li id="menu-attendance" data-id="menu-attendance" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-clock"></i>
                         <span>Attendance</span>
@@ -50,7 +55,7 @@
                     </ul>
                 </li>
 
-                <li class="main">
+                <li id="menu-leave" data-id="menu-leave" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-calendar"></i>
                         <span>Leave Management</span>
@@ -63,7 +68,7 @@
                     </ul>
                 </li>
 
-                <li class="main">
+                <li id="menu-payroll" data-id="menu-payroll" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-wallet"></i>
                         <span>Payroll</span>
@@ -77,7 +82,7 @@
                     </ul>
                 </li>
 
-                <li class="main">
+                <li id="menu-loan" data-id="menu-loan" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-credit-card"></i>
                         <span>Loans</span>
@@ -89,7 +94,7 @@
                     </ul>
                 </li>
 
-                <li class="main">
+                <li id="menu-holiday" data-id="menu-holiday" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-plane"></i>
                         <span>Holidays</span>
@@ -100,7 +105,7 @@
                     </ul>
                 </li>
 
-                <li class="main">
+                <li id="menu-reports" data-id="menu-reports" class="main">
                     <a class="has-arrow" href="#">
                         <i class="icon-chart"></i>
                         <span>Reports</span>
@@ -113,20 +118,22 @@
                     </ul>
                 </li>
 
-                <li class="main">
-                    <a class="has-arrow" href="#">
-                        <i class="icon-lock"></i>
-                        <span>User Management</span>
-                    </a>
-                    <ul aria-expanded="true">
-                        <li><a href="#">User List</a></li>
-                        <li><a href="#">Add User</a></li>
-                        <li><a href="#">Roles</a></li>
-                        <li><a href="#">Permissions</a></li>
-                    </ul>
-                </li>
+                @if(auth()->check() && (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('hr-manager')))
+                    <li id="menu-user-management" data-id="menu-user-management" class="main {{ $isUserManagement ? 'active' : '' }}">
+                        <a class="has-arrow" href="#" aria-expanded="{{ $isUserManagement ? 'true' : 'false' }}">
+                            <i class="icon-lock"></i>
+                            <span>User Management</span>
+                        </a>
+                        <ul aria-expanded="{{ $isUserManagement ? 'true' : 'false' }}">
+                            <li class="{{ request()->routeIs('users.index') || request()->routeIs('users.edit') || request()->routeIs('users.approval') ? 'active' : '' }}"><a href="{{ route('users.index') }}">User List</a></li>
+                            <li class="{{ request()->routeIs('users.create') ? 'active' : '' }}"><a href="{{ route('users.create') }}">Add User</a></li>
+                            <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}"><a href="{{ route('roles.index') }}">Roles</a></li>
+                            <li class="{{ request()->routeIs('permissions.*') ? 'active' : '' }}"><a href="{{ route('permissions.index') }}">Permissions</a></li>
+                        </ul>
+                    </li>
+                @endif
 
-                <li class="main">
+                <li id="menu-settings" data-id="menu-settings" class="main {{ $isSettings ? 'active' : '' }}">
                     <a href="{{ route('settings.edit') }}">
                         <i class="icon-settings"></i>
                         <span>Settings</span>

@@ -1082,6 +1082,7 @@ h3.page_banner_title {
 
 .btn-custom-default {
     background-color: #2C3E50;
+    color: #fff;
 }
 
 .btn-custom:hover, .btn-custom:focus {

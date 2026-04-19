@@ -19,6 +19,9 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'System Admin',
                 'password' => Hash::make('P@ssw0rd'),
+                'account_status' => 'active',
+                'approved_at' => now(),
+                'rejected_reason' => null,
             ]
         );
 

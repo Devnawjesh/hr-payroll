@@ -119,6 +119,10 @@ function setMenuItemActive() {
         e.stopPropagation();
     });
 
+    if ($(".sidebar-menu > li.active").length > 0) {
+        return;
+    }
+
     thisLink = localStorage.getItem("thisLink");
     if (thisLink) {
         $("#" + thisLink).addClass("active");

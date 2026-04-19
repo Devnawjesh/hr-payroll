@@ -28,6 +28,9 @@
                 <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="Enter email" required>
             </div>
             <div class="form-group">
+                <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" placeholder="Enter phone number">
+            </div>
+            <div class="form-group">
                 <input type="password" name="password" class="form-control" id="password" placeholder="Enter password" required>
             </div>
             <div class="form-group">
