@@ -1,9 +1,16 @@
 ###################
 hr-payroll Human resource management system (HRM) 
 ###################
-**I am available for PHP,Laravel,Codeigniter work, check out my Fiverr profile:**
 
-Url: http://www.fiverr.com/s2/0e44853c56
+###################
+Important Notice
+###################
+This project was previously developed using **CodeIgniter**. It has now been fully rebuilt with **Laravel**.
+
+Please note that this branch contains the legacy **CodeIgniter** version and will not receive future maintenance due to CodeIgniter version limitations.
+
+The latest rebuilt and actively maintained **Laravel** version is available in the **main branch**.
+
 
 **Or Contact email address:**
 
