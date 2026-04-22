@@ -12,7 +12,7 @@ Please note that this branch contains the legacy **CodeIgniter** version and wil
 The latest rebuilt and actively maintained **Laravel** version is available in the **main branch**.
 
 
-**Or Contact email address:**
+**Contact email address:**
 
 nawjeshbd@gmail.com
 
