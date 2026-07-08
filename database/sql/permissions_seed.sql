@@ -70,6 +70,8 @@ INSERT INTO `permissions` (`group_name`, `name`, `slug`, `description`, `created
 ('salary_template','Delete Salary Template','salary_template.delete','Delete Salary Template',NOW(),NOW()),
 ('salary_template','Assign Salary Template','salary_template.assign','Assign Salary Template',NOW(),NOW()),
 ('employee_salary','View Employee Salary','employee_salary.view','View Employee Salary',NOW(),NOW()),
+('employee_salary','List Employee Salary','employee_salary.list','List Employee Salary',NOW(),NOW()),
+('employee_salary','Detail Employee Salary','employee_salary.detail','Detail Employee Salary',NOW(),NOW()),
 ('employee_salary','Assign Employee Salary','employee_salary.assign','Assign Employee Salary',NOW(),NOW()),
 ('employee_salary','Update Employee Salary','employee_salary.update','Update Employee Salary',NOW(),NOW()),
 ('employee_salary','History Employee Salary','employee_salary.history','History Employee Salary',NOW(),NOW()),

@@ -36,6 +36,86 @@ class PayrollRepository
     /**
      * @param array<string, mixed> $filters
      */
+    public function salaryAssignments(array $filters): LengthAwarePaginator
+    {
+        $q = trim((string) ($filters['q'] ?? ''));
+        $status = (string) ($filters['status'] ?? '');
+
+        return Employee::query()
+            ->join('employee_salary_templates', 'employee_salary_templates.employee_id', '=', 'employees.id')
+            ->join('salary_templates', 'salary_templates.id', '=', 'employee_salary_templates.salary_template_id')
+            ->leftJoin('salary_grades', 'salary_grades.id', '=', 'employees.salary_grade_id')
+            ->select([
+                'employee_salary_templates.id',
+                'employee_salary_templates.employee_id',
+                'employee_salary_templates.salary_template_id',
+                'employee_salary_templates.pay_frequency',
+                'employee_salary_templates.basic_salary',
+                'employee_salary_templates.house_rent',
+                'employee_salary_templates.medical_allowance',
+                'employee_salary_templates.conveyance_allowance',
+                'employee_salary_templates.other_allowance',
+                'employee_salary_templates.gross_salary',
+                'employee_salary_templates.effective_from',
+                'employee_salary_templates.effective_to',
+                'employees.employee_code',
+                'employees.first_name',
+                'employees.last_name',
+                'salary_templates.name as template_name',
+                'salary_templates.code as template_code',
+                'salary_grades.grade_name',
+                'salary_grades.grade_code',
+            ])
+            ->when($q !== '', fn ($query) => $query->where(function ($inner) use ($q): void {
+                $inner
+                    ->where('employees.first_name', 'like', "%{$q}%")
+                    ->orWhere('employees.last_name', 'like', "%{$q}%")
+                    ->orWhere('employees.employee_code', 'like', "%{$q}%")
+                    ->orWhere('salary_templates.name', 'like', "%{$q}%")
+                    ->orWhere('salary_templates.code', 'like', "%{$q}%");
+            }))
+            ->when((int) ($filters['employee_id'] ?? 0) > 0, fn ($query) => $query->where('employee_salary_templates.employee_id', (int) $filters['employee_id']))
+            ->when($status === 'active', fn ($query) => $query
+                ->where('employee_salary_templates.effective_from', '<=', now()->toDateString())
+                ->where(fn ($inner) => $inner->whereNull('employee_salary_templates.effective_to')->orWhere('employee_salary_templates.effective_to', '>=', now()->toDateString())))
+            ->when($status === 'future', fn ($query) => $query->where('employee_salary_templates.effective_from', '>', now()->toDateString()))
+            ->when($status === 'expired', fn ($query) => $query->whereNotNull('employee_salary_templates.effective_to')->where('employee_salary_templates.effective_to', '<', now()->toDateString()))
+            ->orderByDesc('employee_salary_templates.effective_from')
+            ->orderByDesc('employee_salary_templates.id')
+            ->paginate($this->perPage($filters))
+            ->withQueryString();
+    }
+
+    public function salaryAssignment(int $assignmentId): ?object
+    {
+        return Employee::query()
+            ->join('employee_salary_templates', 'employee_salary_templates.employee_id', '=', 'employees.id')
+            ->join('salary_templates', 'salary_templates.id', '=', 'employee_salary_templates.salary_template_id')
+            ->leftJoin('salary_grades', 'salary_grades.id', '=', 'employees.salary_grade_id')
+            ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
+            ->leftJoin('designations', 'designations.id', '=', 'employees.designation_id')
+            ->select([
+                'employee_salary_templates.*',
+                'employees.employee_code',
+                'employees.first_name',
+                'employees.last_name',
+                'employees.employment_status',
+                'salary_templates.name as template_name',
+                'salary_templates.code as template_code',
+                'salary_grades.grade_name',
+                'salary_grades.grade_code',
+                'salary_grades.min_salary',
+                'salary_grades.max_salary',
+                'departments.name as department_name',
+                'designations.name as designation_name',
+            ])
+            ->where('employee_salary_templates.id', $assignmentId)
+            ->first();
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     */
     public function bonuses(array $filters): LengthAwarePaginator
     {
         return Bonus::query()

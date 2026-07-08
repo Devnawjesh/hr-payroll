@@ -207,8 +207,10 @@ Route::middleware(['auth', 'portal.access'])->group(function (): void {
         Route::post('/salary-templates', [PayrollController::class, 'storeSalaryTemplate'])->middleware('permission:payroll.manage-salary-templates,salary_template.create')->name('salary-templates.store');
         Route::get('/salary-templates/{template}/edit', [PayrollController::class, 'editSalaryTemplate'])->middleware('permission:payroll.manage-salary-templates,salary_template.update')->name('salary-templates.edit');
         Route::put('/salary-templates/{template}', [PayrollController::class, 'updateSalaryTemplate'])->middleware('permission:payroll.manage-salary-templates,salary_template.update')->name('salary-templates.update');
+        Route::get('/salary-template-assignments', [PayrollController::class, 'salaryAssignments'])->middleware('permission:payroll.view,payroll.manage-salary-templates,salary_template.view,employee_salary.view,employee_salary.list')->name('salary-template-assignments.index');
         Route::get('/salary-template-assignments/create', [PayrollController::class, 'assignSalaryTemplateForm'])->middleware('permission:payroll.manage-salary-templates,salary_template.assign,employee_salary.assign')->name('salary-template-assignments.create');
         Route::post('/salary-template-assignments', [PayrollController::class, 'assignSalaryTemplate'])->middleware('permission:payroll.manage-salary-templates,salary_template.assign,employee_salary.assign')->name('salary-template-assignments.store');
+        Route::get('/salary-template-assignments/{assignment}', [PayrollController::class, 'showSalaryAssignment'])->middleware('permission:payroll.view,payroll.manage-salary-templates,salary_template.view,employee_salary.view,employee_salary.detail')->name('salary-template-assignments.show');
 
         Route::get('/bonuses', [PayrollController::class, 'bonuses'])->middleware('permission:payroll.manage-bonus,bonus.view')->name('bonuses.index');
         Route::post('/bonuses', [PayrollController::class, 'storeBonus'])->middleware('permission:payroll.manage-bonus,bonus.create')->name('bonuses.store');

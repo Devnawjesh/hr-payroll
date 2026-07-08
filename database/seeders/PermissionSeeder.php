@@ -58,7 +58,7 @@ class PermissionSeeder extends Seeder
             'payroll' => ['view', 'generate', 'manage_salary_templates', 'manage_bonus', 'manage_loan', 'manage_deduction', 'manage_pf', 'report'],
             'salary_grade' => ['view', 'create', 'update', 'delete'],
             'salary_template' => ['view', 'create', 'update', 'delete', 'assign'],
-            'employee_salary' => ['view', 'assign', 'update', 'history'],
+            'employee_salary' => ['view', 'list', 'detail', 'assign', 'update', 'history'],
             'payroll_run' => ['view', 'generate', 'approve', 'delete', 'mark_paid'],
             'payslip' => ['view', 'print', 'export', 'send'],
             'bonus' => ['view', 'create', 'generate_batch', 'update', 'delete'],

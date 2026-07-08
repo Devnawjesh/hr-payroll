@@ -5,6 +5,9 @@
     <div class="page-title d-flex justify-content-between align-items-center">
         <h1><i class="icon-wallet"></i> {{ __('Salary Templates') }}</h1>
         <div class="d-flex gap-2">
+            @if(auth()->user()?->hasAnyPermission(['salary_template.view', 'employee_salary.view', 'employee_salary.list', 'payroll.manage-salary-templates']))
+                <a href="{{ route('payroll.salary-template-assignments.index') }}" class="btn btn-custom-default"><i class="icon-list"></i> {{ __('Employee Salaries') }}</a>
+            @endif
             @if(auth()->user()?->hasAnyPermission(['salary_template.assign', 'employee_salary.assign', 'payroll.manage-salary-templates']))
                 <a href="{{ route('payroll.salary-template-assignments.create') }}" class="btn btn-custom-default"><i class="icon-user-follow"></i> {{ __('Assign Employee Salary') }}</a>
             @endif

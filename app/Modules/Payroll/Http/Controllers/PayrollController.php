@@ -164,6 +164,28 @@ class PayrollController extends Controller
         ]);
     }
 
+    public function salaryAssignments(Request $request): View
+    {
+        $filters = $this->filters($request);
+
+        return view('hr.payroll.salary_templates.assignments_index', [
+            'assignments' => $this->payrollRepository->salaryAssignments($filters),
+            'filters' => $filters,
+            'employees' => $this->payrollRepository->employeesForSelect(),
+        ]);
+    }
+
+    public function showSalaryAssignment(int $assignment): View
+    {
+        $assignmentRecord = $this->payrollRepository->salaryAssignment($assignment);
+
+        abort_if(! $assignmentRecord, 404);
+
+        return view('hr.payroll.salary_templates.assignment_show', [
+            'assignment' => $assignmentRecord,
+        ]);
+    }
+
     public function createSalaryTemplate(): View
     {
         return view('hr.payroll.salary_templates.form', ['mode' => 'create']);
