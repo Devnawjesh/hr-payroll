@@ -1,3 +1,3 @@
 <div class="footer">
-    © 2026 MadPos by madcoderz.com
+    © {{ date('Y') }} ZeriPOS by zerithonlabs.com
 </div>

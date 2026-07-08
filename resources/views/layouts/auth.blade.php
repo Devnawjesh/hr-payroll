@@ -23,7 +23,7 @@
     @stack('styles')
 </head>
 <body>
-    <div id="wrapper" class="wrapper-login">
+    <div id="wrapper" class="wrapper-login {{ $authClass ?? '' }}">
         <div class="login-inner">
             <div class="auth-logo">
                 <img src="{{ asset($logo) }}" alt="HR Payroll">

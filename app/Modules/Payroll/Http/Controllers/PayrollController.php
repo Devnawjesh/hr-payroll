@@ -221,7 +221,7 @@ class PayrollController extends Controller
             return back()->withInput()->with('error', $exception->getMessage());
         }
 
-        return redirect()->route('payroll.salary-templates.index')->with('success', __('Salary template assigned successfully.'));
+        return redirect()->route('payroll.salary-templates.index')->with('success', __('Employee salary assigned successfully.'));
     }
 
     public function bonuses(Request $request): View

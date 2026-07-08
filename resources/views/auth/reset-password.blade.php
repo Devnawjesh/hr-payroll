@@ -1,22 +1,5 @@
 @extends('layouts.auth', ['title' => 'ZerithonLabs | Change Password', 'heading' => 'Reset Password', 'subtitle' => 'Choose a new password for your account.'])
 
-@push('styles')
-<style>
-    .form-wrapper {
-        width: 100%;
-        margin: 0 auto;
-        padding: 50px;
-        background-color: #fff;
-        animation: flip;
-        animation-duration: 320ms;
-    }
-    @keyframes flip {
-        from { transform: rotateY(180deg); }
-        to { transform: rotateY(0deg); }
-    }
-</style>
-@endpush
-
 @section('content')
     <form method="POST" action="{{ route('password.update') }}">
         @csrf

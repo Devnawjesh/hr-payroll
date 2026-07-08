@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="wrapper-page">
-    <div class="page-title"><h1><i class="icon-user-follow"></i> {{ __('Assign Salary Template') }}</h1></div>
+    <div class="page-title"><h1><i class="icon-user-follow"></i> {{ __('Assign Employee Salary') }}</h1></div>
     @include('partials.flash')
     <div class="page-content">
         <div class="container-fluid">
@@ -28,9 +28,9 @@
                                 <small id="salary_grade_help" class="text-muted d-block mt-1"></small>
                             </div>
                             <div class="col-md-4 form-group mb-3">
-                                <label>{{ __('Salary Template') }}</label>
+                                <label>{{ __('Salary Structure') }}</label>
                                 <select name="salary_template_id" id="salary_template_id" class="form-control" required>
-                                    <option value="">{{ __('Select Template') }}</option>
+                                    <option value="">{{ __('Select Salary Structure') }}</option>
                                     @foreach($templates as $template)
                                         <option
                                             value="{{ $template->id }}"
@@ -60,7 +60,7 @@
                             <div class="col-md-4 form-group mb-3"><label>{{ __('Effective To') }}</label><input type="text" name="effective_to" class="form-control datetimepicker" value="{{ old('effective_to') }}"></div>
                             <div class="col-md-12 form-group mb-3"><label>{{ __('Notes') }}</label><textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea></div>
                         </div>
-                        <button class="btn btn-custom" type="submit"><i class="icon-check"></i> {{ __('Assign Template') }}</button>
+                        <button class="btn btn-custom" type="submit"><i class="icon-check"></i> {{ __('Assign Employee Salary') }}</button>
                         <a href="{{ route('payroll.salary-templates.index') }}" class="btn btn-custom-default"><i class="icon-arrow-left"></i> {{ __('Back') }}</a>
                     </form>
                 </div>

@@ -1,22 +1,5 @@
 @extends('layouts.auth', ['title' => 'ZerithonLabs | Create Account', 'heading' => 'Create Account', 'subtitle' => 'Set up a new ZerithonLabs account to get started.'])
 
-@push('styles')
-<style>
-    .form-wrapper {
-        width: 100%;
-        margin: 0 auto;
-        padding: 50px;
-        background-color: #fff;
-        animation: flip;
-        animation-duration: 320ms;
-    }
-    @keyframes flip {
-        from { transform: rotateY(180deg); }
-        to { transform: rotateY(0deg); }
-    }
-</style>
-@endpush
-
 @section('content')
     <form method="POST" action="{{ route('register.store') }}">
         @csrf

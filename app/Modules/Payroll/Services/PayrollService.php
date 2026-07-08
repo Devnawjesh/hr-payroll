@@ -46,6 +46,7 @@ class PayrollService
     public function assignSalaryTemplate(array $payload): void
     {
         $employee = Employee::query()
+            ->with('salaryGrade:id,grade_name,min_salary,max_salary')
             ->find((int) $payload['employee_id']);
 
         if (! $employee) {
@@ -65,35 +66,74 @@ class PayrollService
             'effective_to' => null,
         ], array_filter($payload, fn ($value) => $value !== null && $value !== ''));
 
+        $effectiveFrom = CarbonImmutable::parse($payload['effective_from']);
+        $effectiveTo = $payload['effective_to'] ? CarbonImmutable::parse($payload['effective_to']) : null;
+        $basicSalary = (float) $payload['basic_salary'];
+        $grade = $employee->salaryGrade;
+
+        if ($grade?->min_salary !== null && $basicSalary < (float) $grade->min_salary) {
+            throw new RuntimeException(__('Basic salary is below the employee salary grade minimum.'));
+        }
+
+        if ($grade?->max_salary !== null && $basicSalary > (float) $grade->max_salary) {
+            throw new RuntimeException(__('Basic salary is above the employee salary grade maximum.'));
+        }
+
         $grossSalary = (float) $payload['basic_salary']
             + (float) $payload['house_rent']
             + (float) $payload['medical_allowance']
             + (float) $payload['conveyance_allowance']
             + (float) $payload['other_allowance'];
 
-        DB::table('employee_salary_templates')->updateOrInsert(
-            [
-                'employee_id' => (int) $payload['employee_id'],
-                'effective_from' => $payload['effective_from'],
-            ],
-            [
-                'salary_template_id' => (int) $payload['salary_template_id'],
-                'pay_frequency' => $payload['pay_frequency'] ?: null,
-                'basic_salary' => $payload['basic_salary'],
-                'house_rent' => $payload['house_rent'],
-                'medical_allowance' => $payload['medical_allowance'],
-                'conveyance_allowance' => $payload['conveyance_allowance'],
-                'other_allowance' => $payload['other_allowance'],
-                'gross_salary' => $grossSalary,
-                'provident_fund_percent' => $payload['provident_fund_percent'],
-                'tax_percent' => $payload['tax_percent'],
-                'ctc_amount' => $payload['ctc_amount'],
-                'notes' => $payload['notes'],
-                'effective_to' => $payload['effective_to'],
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        DB::transaction(function () use ($payload, $effectiveFrom, $effectiveTo, $grossSalary): void {
+            $employeeId = (int) $payload['employee_id'];
+            $effectiveFromDate = $effectiveFrom->toDateString();
+            $effectiveToDate = $effectiveTo?->toDateString();
+
+            DB::table('employee_salary_templates')
+                ->where('employee_id', $employeeId)
+                ->where('effective_from', '<', $effectiveFromDate)
+                ->where(fn ($query) => $query->whereNull('effective_to')->orWhere('effective_to', '>=', $effectiveFromDate))
+                ->update([
+                    'effective_to' => $effectiveFrom->subDay()->toDateString(),
+                    'updated_at' => now(),
+                ]);
+
+            $overlapExists = DB::table('employee_salary_templates')
+                ->where('employee_id', $employeeId)
+                ->where('effective_from', '!=', $effectiveFromDate)
+                ->where('effective_from', '<=', $effectiveToDate ?? '9999-12-31')
+                ->where(fn ($query) => $query->whereNull('effective_to')->orWhere('effective_to', '>=', $effectiveFromDate))
+                ->exists();
+
+            if ($overlapExists) {
+                throw new RuntimeException(__('Employee salary assignment dates overlap with an existing salary assignment.'));
+            }
+
+            DB::table('employee_salary_templates')->updateOrInsert(
+                [
+                    'employee_id' => $employeeId,
+                    'effective_from' => $effectiveFromDate,
+                ],
+                [
+                    'salary_template_id' => (int) $payload['salary_template_id'],
+                    'pay_frequency' => $payload['pay_frequency'] ?: null,
+                    'basic_salary' => $payload['basic_salary'],
+                    'house_rent' => $payload['house_rent'],
+                    'medical_allowance' => $payload['medical_allowance'],
+                    'conveyance_allowance' => $payload['conveyance_allowance'],
+                    'other_allowance' => $payload['other_allowance'],
+                    'gross_salary' => $grossSalary,
+                    'provident_fund_percent' => $payload['provident_fund_percent'],
+                    'tax_percent' => $payload['tax_percent'],
+                    'ctc_amount' => $payload['ctc_amount'],
+                    'notes' => $payload['notes'],
+                    'effective_to' => $effectiveToDate,
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
+        });
     }
 
     /**
@@ -463,7 +503,14 @@ class PayrollService
     private function createPayrollItem(PayrollRun $run, Employee $employee, CarbonImmutable $periodStart, CarbonImmutable $periodEnd): PayrollItem
     {
         $assignment = $this->activeSalaryAssignment($employee->id, $periodEnd);
-        $basicSalary = (float) ($assignment?->basic_salary ?? $employee->salaryGrade?->min_salary ?? 0);
+
+        if (! $assignment) {
+            throw new RuntimeException(__('No active salary assignment found for :employee in this payroll period.', [
+                'employee' => $this->employeeLabel($employee),
+            ]));
+        }
+
+        $basicSalary = (float) $assignment->basic_salary;
         $allowanceTotal = (float) (($assignment?->house_rent ?? 0) + ($assignment?->medical_allowance ?? 0) + ($assignment?->conveyance_allowance ?? 0) + ($assignment?->other_allowance ?? 0));
         $bonusTotal = (float) Bonus::query()
             ->where('employee_id', $employee->id)
@@ -490,9 +537,9 @@ class PayrollService
             'payment_status' => 'pending',
         ]);
 
-        $otherDeduction = $this->attachActiveDeductions($item, $employee->id, $periodStart, $periodEnd);
-        $totalDeduction = $loanDeduction + $otherDeduction + $providentFundDeduction + $taxDeduction;
         $gross = $basicSalary + $allowanceTotal + $bonusTotal;
+        $otherDeduction = $this->attachActiveDeductions($item, $employee->id, $periodStart, $periodEnd, $basicSalary);
+        $totalDeduction = $loanDeduction + $otherDeduction + $providentFundDeduction + $taxDeduction;
 
         $item->update([
             'other_deduction' => $otherDeduction,
@@ -638,6 +685,11 @@ class PayrollService
         return round(($baseAmount * (float) ($payload['percentage'] ?? 0)) / 100, 2);
     }
 
+    private function employeeLabel(Employee $employee): string
+    {
+        return trim($employee->first_name . ' ' . $employee->last_name) . ' (' . $employee->employee_code . ')';
+    }
+
     private function providentFundDeduction(int $employeeId, float $basicSalary, ?object $assignment): float
     {
         $fund = EmployeeProvidentFund::query()->where('employee_id', $employeeId)->first();
@@ -646,7 +698,7 @@ class PayrollService
         return round(($basicSalary * $percent) / 100, 2);
     }
 
-    private function attachActiveDeductions(PayrollItem $item, int $employeeId, CarbonImmutable $periodStart, CarbonImmutable $periodEnd): float
+    private function attachActiveDeductions(PayrollItem $item, int $employeeId, CarbonImmutable $periodStart, CarbonImmutable $periodEnd, float $basicSalary): float
     {
         $deductions = EmployeeDeduction::query()
             ->where('employee_id', $employeeId)
@@ -657,7 +709,9 @@ class PayrollService
 
         $total = 0.0;
         foreach ($deductions as $deduction) {
-            $amount = (float) $deduction->amount;
+            $amount = $deduction->calculation_type === 'percent'
+                ? round(($basicSalary * (float) $deduction->amount) / 100, 2)
+                : (float) $deduction->amount;
             $total += $amount;
             PayrollItemDeduction::query()->create([
                 'payroll_item_id' => $item->id,

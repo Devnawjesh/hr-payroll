@@ -107,7 +107,8 @@
 </div>
 @endsection
 
-@push('scripts')    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+@push('scripts')    
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
         (function () {
             if (window.CKEDITOR) {

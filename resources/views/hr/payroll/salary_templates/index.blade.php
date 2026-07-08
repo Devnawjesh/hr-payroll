@@ -6,7 +6,7 @@
         <h1><i class="icon-wallet"></i> {{ __('Salary Templates') }}</h1>
         <div class="d-flex gap-2">
             @if(auth()->user()?->hasAnyPermission(['salary_template.assign', 'employee_salary.assign', 'payroll.manage-salary-templates']))
-                <a href="{{ route('payroll.salary-template-assignments.create') }}" class="btn btn-custom-default"><i class="icon-user-follow"></i> {{ __('Assign Template') }}</a>
+                <a href="{{ route('payroll.salary-template-assignments.create') }}" class="btn btn-custom-default"><i class="icon-user-follow"></i> {{ __('Assign Employee Salary') }}</a>
             @endif
             @if(auth()->user()?->hasAnyPermission(['salary_template.create', 'payroll.manage-salary-templates']))
                 <a href="{{ route('payroll.salary-templates.create') }}" class="btn btn-custom"><i class="icon-plus"></i> {{ __('Add Template') }}</a>
@@ -40,7 +40,7 @@
                                     <th>{{ __('Allowances') }}</th>
                                     <th>{{ __('PF %') }}</th>
                                     <th>{{ __('Tax %') }}</th>
-                                    <th>{{ __('Employees') }}</th>
+                                    <th>{{ __('Assignments') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Actions') }}</th>
                                 </tr>
