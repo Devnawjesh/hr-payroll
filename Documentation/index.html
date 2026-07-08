@@ -804,7 +804,7 @@ php artisan optimize:clear</code></pre>
             <ol>
                 <li>Create Salary Grades.</li>
                 <li>Create reusable Salary Templates.</li>
-                <li>Assign Salary Template to Employee and customize individual salary values.</li>
+                <li>Assign Employee Salary from a salary template and customize the actual employee salary values.</li>
                 <li>Add bonuses, loans, deductions and provident fund settings.</li>
                 <li>Generate Payroll Draft for selected period. Draft shows expected salary, bonus, loan installment deduction, other deductions, PF, tax and net payable.</li>
                 <li>Review all payroll items and payslips before final submission.</li>
@@ -816,7 +816,7 @@ php artisan optimize:clear</code></pre>
                 <tr><th>Step</th><th>System Logic</th></tr>
                 <tr><td>Period check</td><td>The system checks pay frequency, period start and period end. If a draft run exists for the same period, it is regenerated. If a processed run exists, only a missing selected employee can be added. Approved or paid runs cannot be regenerated.</td></tr>
                 <tr><td>Employee selection</td><td>If no employee is selected, payroll is generated for all active employees. If an employee is selected, payroll is generated only for that active employee.</td></tr>
-                <tr><td>Salary source</td><td>Payroll first uses the employee-specific salary assignment active at the payroll period end date. If no assignment exists, it falls back to the employee salary grade minimum salary.</td></tr>
+                <tr><td>Salary source</td><td>Payroll uses the employee-specific salary assignment active at the payroll period end date. If no active salary assignment exists, payroll generation stops with an error so the employee is not paid with an incorrect fallback amount.</td></tr>
                 <tr><td>Allowances</td><td>House rent, medical allowance, conveyance allowance and other allowance are taken from the employee salary assignment.</td></tr>
                 <tr><td>Bonus</td><td>Bonus amount is included when the bonus date falls inside the payroll period.</td></tr>
                 <tr><td>Loan deduction</td><td>Only active loans are considered. Pending installments with due dates inside the payroll period are summed into the draft payslip.</td></tr>
@@ -845,7 +845,7 @@ php artisan optimize:clear</code></pre>
                 <li>Classifies employees by level.</li>
                 <li>Provides allowed salary range.</li>
                 <li>Used by leave policies and HR reports.</li>
-                <li>Used as fallback if no employee salary assignment exists.</li>
+                <li>Used to validate employee salary assignment amounts.</li>
             </ul>
             <div class="screenshot">
                 <strong>Screenshot Placeholder: Salary Grades</strong>
@@ -876,14 +876,22 @@ php artisan optimize:clear</code></pre>
         <section id="employee-salary">
             <h2>Employee Salary Assignment</h2>
             <p>This is the final salary setup used during payroll calculation. Employees in the same salary grade can have different salary amounts.</p>
+            <div class="success">Use the Employee Salaries table at <code>/payroll/salary-template-assignments</code> to review all salary assignments. The detail page shows employee, grade, salary structure, actual salary breakdown, CTC, effective dates and notes.</div>
             <h3>How It Works</h3>
             <ol>
                 <li>Select employee.</li>
-                <li>Select salary template.</li>
+                <li>Select salary structure/template.</li>
                 <li>The system fills default template values.</li>
                 <li>HR customizes the salary values for that employee.</li>
                 <li>Save assignment with effective dates.</li>
             </ol>
+            <h3>Assignment Rules</h3>
+            <ul>
+                <li>Basic salary must be within the employee salary grade min/max range when configured.</li>
+                <li>Overlapping salary assignment date ranges are blocked.</li>
+                <li>Assigning a new active salary closes the previous active assignment automatically.</li>
+                <li>Payroll requires an active salary assignment for the payroll period.</li>
+            </ul>
             <h3>Stored Snapshot Values</h3>
             <table>
                 <tr><th>Field</th><th>Purpose</th></tr>
@@ -897,9 +905,10 @@ php artisan optimize:clear</code></pre>
                 <tr><td><code>tax_percent</code></td><td>Employee-specific tax rate.</td></tr>
                 <tr><td><code>ctc_amount</code></td><td>Optional cost-to-company amount.</td></tr>
             </table>
+            <div class="note"><code>ctc_amount</code> means Cost to Company. It is optional and can include gross salary plus employer-paid benefits such as employer PF or insurance. If employer-side benefits are not tracked, leave it empty or set it equal to gross salary.</div>
             <div class="warning">The assigned basic salary must be within the employee salary grade range when min/max values are configured.</div>
             <div class="screenshot">
-                <strong>Screenshot Placeholder: Assign Salary Template</strong>
+                <strong>Screenshot Placeholder: Employee Salary Assignment</strong>
                 Add screenshot later at <span class="path">Documentation/assets/screenshots/employee-salary-assignment.png</span>
             </div>
         </section>
@@ -929,13 +938,22 @@ php artisan optimize:clear</code></pre>
             <ul>
                 <li>Employee.</li>
                 <li>Loan reference.</li>
-                <li>Principal amount.</li>
+                <li>Principal Amount.</li>
                 <li>Interest percentage.</li>
                 <li>Installment count.</li>
-                <li>Installment amount.</li>
+                <li>Installment Amount, calculated from Principal Amount, Interest % and Installment Count.</li>
                 <li>Issued date and first installment date.</li>
                 <li>Status: pending supervisor, pending final, active, paused, closed or rejected.</li>
             </ul>
+            <h3>Installment Amount Formula</h3>
+            <p>The user enters <strong>Principal Amount</strong>, optional <strong>Interest %</strong> and <strong>Installment Count</strong>. The application calculates Installment Amount automatically in the form and recalculates it again on the backend when saving or rescheduling.</p>
+            <pre><code>total_payable = principal_amount + (principal_amount * interest_percent / 100)
+installment_amount = total_payable / installment_count</code></pre>
+            <table>
+                <tr><th>Principal Amount</th><th>Interest</th><th>Installment Count</th><th>Total Payable</th><th>Installment Amount</th></tr>
+                <tr><td>60,000</td><td>0%</td><td>6</td><td>60,000</td><td>10,000</td></tr>
+                <tr><td>60,000</td><td>10%</td><td>6</td><td>66,000</td><td>11,000</td></tr>
+            </table>
             <h3>Loan Approval Flow</h3>
             <ol>
                 <li>Employee submits a loan request with <code>loan.apply</code> or <code>employee_loan.apply</code>.</li>
@@ -946,6 +964,7 @@ php artisan optimize:clear</code></pre>
             </ol>
             <h3>Loan Installments</h3>
             <p>Installments are created from the approved loan schedule. Payroll picks pending installments when their due date falls inside the payroll period.</p>
+            <p>Installment due dates are generated monthly from the first installment date. If first installment date is empty, the issued date is used as the first due date.</p>
             <h3>Salary Deduction Workflow</h3>
             <ol>
                 <li>Loan must be active before it can be deducted from payroll.</li>
@@ -957,6 +976,13 @@ php artisan optimize:clear</code></pre>
             </ol>
             <div class="success">Recommended workflow: employee applies for loan, supervisor approves, final approver activates it, payroll deducts due installments from salary, and final payroll updates loan balances.</div>
             <div class="warning">If loan installments are manually paid, rescheduled or changed after payroll draft generation, regenerate the payroll draft before final submission so payslip deduction and loan balance remain the same.</div>
+            <h3>Reschedule Rules</h3>
+            <ul>
+                <li>Reschedule is allowed only when no installment has been paid.</li>
+                <li>Reschedule recalculates Installment Amount from Principal Amount, Interest % and Installment Count.</li>
+                <li>The old pending schedule is deleted and a new schedule is created.</li>
+                <li>Reschedule is blocked after any installment is paid to protect payroll history.</li>
+            </ul>
             <h3>Manual Installment Payment</h3>
             <p>Manual installment payment should be used only for payments collected outside salary, such as cash, bank deposit or adjustment. Salary-related repayment should normally happen through payroll finalization.</p>
             <div class="screenshot">
@@ -1144,6 +1170,10 @@ Net Payable = Gross - Total Deduction</code></pre>
                 <tr><td><code>payroll.generate</code> / <code>payroll_run.generate</code></td><td>Payroll staff should generate payroll drafts.</td><td>Can create or regenerate draft payroll runs.</td></tr>
                 <tr><td><code>payroll_run.approve</code></td><td>Authorized payroll approver should final submit payroll.</td><td>Can process draft payroll and post salary-linked loan/PF effects.</td></tr>
                 <tr><td><code>payroll_run.mark-paid</code></td><td>Finance/payroll staff should mark salary payment status.</td><td>Can mark payslips as paid after payroll is processed.</td></tr>
+                <tr><td><code>employee_salary.view</code></td><td>User should access employee salary module screens.</td><td>Employee salary module visibility.</td></tr>
+                <tr><td><code>employee_salary.list</code></td><td>User should view the Employee Salaries assignment table.</td><td>Can list employee salary assignments.</td></tr>
+                <tr><td><code>employee_salary.detail</code></td><td>User should view one employee salary assignment detail page.</td><td>Can inspect salary assignment breakdown and effective dates.</td></tr>
+                <tr><td><code>employee_salary.assign</code></td><td>Payroll staff should assign actual salary to employees.</td><td>Can create employee salary assignment snapshots.</td></tr>
                 <tr><td><code>loan.apply</code> / <code>employee_loan.apply</code></td><td>Employee should request a loan.</td><td>Own loan application only.</td></tr>
                 <tr><td><code>loan.view</code> / <code>employee_loan.view</code></td><td>User should see loan information.</td><td>Own loan data only unless management permissions are assigned.</td></tr>
                 <tr><td><code>loan.approve-supervisor</code> / <code>employee_loan.approve-supervisor</code></td><td>Supervisor or Department Head should review first-stage loan requests.</td><td>Pending team approval loans only.</td></tr>
@@ -1295,6 +1325,12 @@ Net Payable = Gross - Total Deduction</code></pre>
 
             <h3>Can payment be marked before payroll final submission?</h3>
             <p>No. Payslip payment can be marked only after the payroll run is finalized.</p>
+
+            <h3>How is loan installment amount calculated?</h3>
+            <p>The system calculates it from Principal Amount, Interest % and Installment Count: <code>(principal + interest amount) / installment count</code>. The backend recalculates it during save and reschedule.</p>
+
+            <h3>Can a loan be rescheduled after payroll paid an installment?</h3>
+            <p>No. Rescheduling is blocked after any installment is paid so payroll and loan history remain consistent.</p>
 
             <h3>Why can some users not see a module?</h3>
             <p>The user role may not have the required permission. Assign the needed permission from Role Permissions.</p>

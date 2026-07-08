@@ -33,10 +33,10 @@
                     </div>
 
                     <div class="row g-3 mb-4">
-                        <div class="col-md-3"><strong>{{ __('Principal:') }}</strong><br>{{ number_format((float) $loan->principal_amount, 2) }}</div>
+                        <div class="col-md-3"><strong>{{ __('Principal Amount:') }}</strong><br>{{ number_format((float) $loan->principal_amount, 2) }}</div>
                         <div class="col-md-3"><strong>{{ __('Paid:') }}</strong><br>{{ number_format($paidTotal, 2) }}</div>
                         <div class="col-md-3"><strong>{{ __('Remaining:') }}</strong><br>{{ number_format($remainingTotal, 2) }}</div>
-                        <div class="col-md-3"><strong>{{ __('Installment:') }}</strong><br>{{ $loan->installment_count }} x {{ number_format((float) $loan->installment_amount, 2) }}</div>
+                        <div class="col-md-3"><strong>{{ __('Installment Amount:') }}</strong><br>{{ $loan->installment_count }} x {{ number_format((float) $loan->installment_amount, 2) }}</div>
                     </div>
 
                     @if(in_array($loan->status, ['pending_supervisor', 'pending_final'], true))
@@ -101,10 +101,10 @@
                             @method('PUT')
                             <input type="hidden" name="employee_id" value="{{ $loan->employee_id }}">
                             <div class="col-md-2"><input type="text" name="loan_reference" class="form-control" value="{{ old('loan_reference', $loan->loan_reference) }}" required></div>
-                            <div class="col-md-2"><input type="number" step="0.01" min="0" name="principal_amount" class="form-control" value="{{ old('principal_amount', $loan->principal_amount) }}" required></div>
+                            <div class="col-md-2"><input type="number" step="0.01" min="0" name="principal_amount" class="form-control loan-principal-amount" value="{{ old('principal_amount', $loan->principal_amount) }}" placeholder="{{ __('Principal Amount') }}" required></div>
                             <div class="col-md-1"><input type="number" step="0.01" min="0" max="100" name="interest_rate_percent" class="form-control" value="{{ old('interest_rate_percent', $loan->interest_rate_percent) }}"></div>
-                            <div class="col-md-1"><input type="number" min="1" name="installment_count" class="form-control" value="{{ old('installment_count', $loan->installment_count) }}" required></div>
-                            <div class="col-md-2"><input type="number" step="0.01" min="0" name="installment_amount" class="form-control" value="{{ old('installment_amount', $loan->installment_amount) }}" required></div>
+                            <div class="col-md-1"><input type="number" min="1" name="installment_count" class="form-control loan-installment-count" value="{{ old('installment_count', $loan->installment_count) }}" required></div>
+                            <div class="col-md-2"><input type="number" step="0.01" min="0" name="installment_amount" class="form-control loan-installment-amount" value="{{ old('installment_amount', $loan->installment_amount) }}" readonly></div>
                             <div class="col-md-2"><input type="text" name="issued_date" class="form-control datetimepicker" value="{{ old('issued_date', $loan->issued_date) }}" required></div>
                             <div class="col-md-2"><input type="text" name="first_installment_date" class="form-control datetimepicker" value="{{ old('first_installment_date', $loan->first_installment_date) }}"></div>
                             <div class="col-md-2"><select name="status" class="form-control">@foreach(['active','paused','closed'] as $status)<option value="{{ $status }}" {{ old('status', $loan->status)===$status?'selected':'' }}>{{ __(ucfirst($status)) }}</option>@endforeach</select></div>
@@ -173,3 +173,38 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    (function () {
+        function calculateInstallment(form) {
+            var principal = parseFloat((form.querySelector('.loan-principal-amount') || {}).value || 0);
+            var interest = parseFloat((form.querySelector('[name="interest_rate_percent"]') || {}).value || 0);
+            var count = parseInt((form.querySelector('.loan-installment-count') || {}).value || 0, 10);
+            var amount = form.querySelector('.loan-installment-amount');
+
+            if (!amount || count <= 0) {
+                return;
+            }
+
+            amount.value = ((principal + ((principal * interest) / 100)) / count).toFixed(2);
+        }
+
+        document.querySelectorAll('form').forEach(function (form) {
+            if (!form.querySelector('.loan-installment-amount')) {
+                return;
+            }
+
+            ['input', 'change'].forEach(function (eventName) {
+                form.addEventListener(eventName, function (event) {
+                    if (event.target.matches('.loan-principal-amount, .loan-installment-count, [name="interest_rate_percent"]')) {
+                        calculateInstallment(form);
+                    }
+                });
+            });
+
+            calculateInstallment(form);
+        });
+    })();
+</script>
+@endpush

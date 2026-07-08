@@ -608,7 +608,7 @@ class PayrollController extends Controller
             'principal_amount' => ['required', 'numeric', 'min:0'],
             'interest_rate_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'installment_count' => ['required', 'integer', 'min:1', 'max:240'],
-            'installment_amount' => ['required', 'numeric', 'min:0'],
+            'installment_amount' => ['nullable', 'numeric', 'min:0'],
             'issued_date' => ['required', 'date'],
             'first_installment_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['pending_supervisor', 'pending_final', 'active', 'closed', 'paused', 'rejected'])],

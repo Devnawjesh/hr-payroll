@@ -203,7 +203,94 @@ Payroll, payslip, loan, deduction and provident fund data are confidential. Depa
 
 ## Payroll Flow
 
-Payroll is generated as a draft first. HR or Payroll reviews the draft payslips, then final submits the payroll run. Final submission posts salary-linked effects such as due loan installments and provident fund transactions. Salary payment status can be marked after the payroll run is processed.
+Payroll uses three salary setup layers:
+
+- `Salary Grade`: employee level and allowed salary range. Example: Officer, 30,000-60,000.
+- `Salary Template`: reusable salary structure/defaults. Example: basic salary, house rent, medical allowance, PF percent and tax percent.
+- `Employee Salary Assignment`: the actual employee salary for an effective date range. This is the payroll source of truth.
+
+This means many employees can share one salary grade and one salary template, while still having different actual salary amounts.
+
+Employee salary assignment is managed from:
+
+- `Payroll > Salary Templates > Assign Employee Salary`
+- `Payroll > Salary Templates > Employee Salaries`
+- Direct route: `/payroll/salary-template-assignments`
+
+Assignment rules:
+
+- basic salary must stay inside the employee salary grade min/max range
+- overlapping employee salary assignment date ranges are blocked
+- assigning a new active salary closes the previous active assignment automatically
+- payroll generation fails if an active employee has no active salary assignment for the payroll period
+
+`CTC Amount` means Cost to Company. It is optional and represents total company cost for the employee, such as gross salary plus employer-paid benefits or employer PF. If employer-side benefits are not tracked, it can be left empty or set equal to gross salary.
+
+Payroll is generated as a draft first. HR or Payroll reviews the draft payslips, then final submits the payroll run. Final submission posts salary-linked effects such as due loan installments and provident fund transactions.
+
+Payroll run and payslip status are separate:
+
+- payroll run `draft`: generated but not final submitted
+- payroll run `processed`: final submitted and salary-linked effects posted
+- payslip/payment `pending`: salary is calculated but payment has not been marked as paid
+- payslip/payment `paid`: payment has been marked as paid from the payslip detail page
+
+Employee salary permissions:
+
+- `employee_salary.view`: view employee salary module access
+- `employee_salary.list`: view employee salary assignment table
+- `employee_salary.detail`: view one salary assignment detail page
+- `employee_salary.assign`: assign actual salary to an employee
+- `employee_salary.update`: update employee salary records when implemented
+- `employee_salary.history`: view salary history when implemented
+
+## Loan Flow
+
+Employee loans are created with a `Principal Amount`, installment count, issued date and first installment date.
+
+Loan amount fields:
+
+- `Principal Amount`: total amount given to the employee
+- `Interest %`: optional simple interest percent
+- `Installment Count`: number of installments to split repayment into
+- `Installment Amount`: calculated from principal amount, interest percent and installment count
+
+Installment amount formula:
+
+```text
+total_payable = principal_amount + (principal_amount * interest_percent / 100)
+installment_amount = total_payable / installment_count
+```
+
+Example:
+
+```text
+Principal Amount: 60,000
+Interest: 0%
+Installment Count: 6
+Installment Amount: 10,000
+```
+
+If interest is used:
+
+```text
+Principal Amount: 60,000
+Interest: 10%
+Total Payable: 66,000
+Installment Count: 6
+Installment Amount: 11,000
+```
+
+The application calculates the installment amount when principal amount or installment count changes. The backend also recalculates the value when saving or rescheduling, so users do not need to manually decide the installment amount.
+
+When a loan becomes active, installment rows are generated monthly from the first installment date. During payroll generation, pending installments with due dates inside the payroll period are added to `loan_deduction`. When the payroll run is final submitted, those installments are marked paid and linked to the payroll item.
+
+Rescheduling:
+
+- allowed only when no installment has been paid
+- recalculates installment amount from principal amount, interest percent and count
+- deletes the old pending schedule and creates a new schedule
+- blocked after any installment is paid to protect payroll history
 
 For full module and permission details, see `Documentation/index.html`.
 

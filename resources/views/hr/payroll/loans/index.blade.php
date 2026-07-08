@@ -22,10 +22,10 @@
                             <div class="col-md-3"><input type="text" class="form-control" value="{{ trim(($authUser?->employee?->first_name ?? '').' '.($authUser?->employee?->last_name ?? '')) }}" readonly></div>
                         @endif
                         <div class="col-md-2"><input type="text" name="loan_reference" class="form-control" placeholder="{{ __('Reference') }}" required></div>
-                        <div class="col-md-2"><input type="number" step="0.01" min="0" name="principal_amount" class="form-control" placeholder="{{ __('Principal') }}" required></div>
+                        <div class="col-md-2"><input type="number" step="0.01" min="0" name="principal_amount" class="form-control loan-principal-amount" placeholder="{{ __('Principal Amount') }}" required></div>
                         <div class="col-md-1"><input type="number" step="0.01" min="0" max="100" name="interest_rate_percent" class="form-control" placeholder="{{ __('Interest') }}"></div>
-                        <div class="col-md-1"><input type="number" min="1" name="installment_count" class="form-control" placeholder="{{ __('Count') }}" required></div>
-                        <div class="col-md-2"><input type="number" step="0.01" min="0" name="installment_amount" class="form-control" placeholder="{{ __('Installment') }}" required></div>
+                        <div class="col-md-1"><input type="number" min="1" name="installment_count" class="form-control loan-installment-count" placeholder="{{ __('Count') }}" required></div>
+                        <div class="col-md-2"><input type="number" step="0.01" min="0" name="installment_amount" class="form-control loan-installment-amount" placeholder="{{ __('Installment Amount') }}" readonly></div>
                         <div class="col-md-1"><button class="btn btn-custom w-100" type="submit"><i class="icon-plus"></i></button></div>
                         <div class="col-md-2"><input type="text" name="issued_date" class="form-control datetimepicker" value="{{ now()->toDateString() }}" placeholder="{{ __('Issued') }}" required></div>
                         <div class="col-md-2"><input type="text" name="first_installment_date" class="form-control datetimepicker" placeholder="{{ __('First due') }}"></div>
@@ -63,7 +63,7 @@
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle">
-                            <thead><tr><th>{{ __('Employee') }}</th><th>{{ __('Reference') }}</th><th>{{ __('Principal') }}</th><th>{{ __('Installment') }}</th><th>{{ __('Paid') }}</th><th>{{ __('Remaining') }}</th><th>{{ __('Issued') }}</th><th>{{ __('Status') }}</th><th>{{ __('Actions') }}</th></tr></thead>
+                            <thead><tr><th>{{ __('Employee') }}</th><th>{{ __('Reference') }}</th><th>{{ __('Principal Amount') }}</th><th>{{ __('Installment Amount') }}</th><th>{{ __('Paid') }}</th><th>{{ __('Remaining') }}</th><th>{{ __('Issued') }}</th><th>{{ __('Status') }}</th><th>{{ __('Actions') }}</th></tr></thead>
                             <tbody>
                                 @forelse($loans as $loan)
                                     <tr>
@@ -90,3 +90,38 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    (function () {
+        function calculateInstallment(form) {
+            var principal = parseFloat((form.querySelector('.loan-principal-amount') || {}).value || 0);
+            var interest = parseFloat((form.querySelector('[name="interest_rate_percent"]') || {}).value || 0);
+            var count = parseInt((form.querySelector('.loan-installment-count') || {}).value || 0, 10);
+            var amount = form.querySelector('.loan-installment-amount');
+
+            if (!amount || count <= 0) {
+                return;
+            }
+
+            amount.value = ((principal + ((principal * interest) / 100)) / count).toFixed(2);
+        }
+
+        document.querySelectorAll('form').forEach(function (form) {
+            if (!form.querySelector('.loan-installment-amount')) {
+                return;
+            }
+
+            ['input', 'change'].forEach(function (eventName) {
+                form.addEventListener(eventName, function (event) {
+                    if (event.target.matches('.loan-principal-amount, .loan-installment-count, [name="interest_rate_percent"]')) {
+                        calculateInstallment(form);
+                    }
+                });
+            });
+
+            calculateInstallment(form);
+        });
+    })();
+</script>
+@endpush

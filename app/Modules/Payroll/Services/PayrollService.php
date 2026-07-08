@@ -226,6 +226,7 @@ class PayrollService
         return DB::transaction(function () use ($payload, $loan): EmployeeLoan {
             $payload['interest_rate_percent'] = $payload['interest_rate_percent'] ?? 0;
             $payload['first_installment_date'] = $payload['first_installment_date'] ?? null;
+            $payload['installment_amount'] = $this->installmentAmountFromLoanPayload($payload);
 
             $loan ??= new EmployeeLoan();
             $isNewLoan = ! $loan->exists;
@@ -322,6 +323,7 @@ class PayrollService
 
             $payload['interest_rate_percent'] = $payload['interest_rate_percent'] ?? 0;
             $payload['first_installment_date'] = $payload['first_installment_date'] ?? null;
+            $payload['installment_amount'] = $this->installmentAmountFromLoanPayload($payload);
 
             $loan->fill($payload);
             $loan->save();
@@ -556,17 +558,35 @@ class PayrollService
     private function createLoanInstallments(EmployeeLoan $loan, array $payload): void
     {
         $firstDueDate = CarbonImmutable::parse($payload['first_installment_date'] ?: $payload['issued_date']);
+        $installmentAmount = $this->installmentAmountFromLoanPayload($payload);
 
         for ($i = 1; $i <= (int) $payload['installment_count']; $i++) {
             LoanInstallment::query()->create([
                 'employee_loan_id' => $loan->id,
                 'installment_no' => $i,
                 'due_date' => $firstDueDate->addMonthsNoOverflow($i - 1)->toDateString(),
-                'amount' => $payload['installment_amount'],
+                'amount' => $installmentAmount,
                 'paid_amount' => 0,
                 'status' => 'pending',
             ]);
         }
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function installmentAmountFromLoanPayload(array $payload): float
+    {
+        $count = (int) ($payload['installment_count'] ?? 0);
+        if ($count <= 0) {
+            return round((float) ($payload['installment_amount'] ?? 0), 2);
+        }
+
+        $principal = (float) ($payload['principal_amount'] ?? 0);
+        $interestPercent = (float) ($payload['interest_rate_percent'] ?? 0);
+        $totalPayable = $principal + (($principal * $interestPercent) / 100);
+
+        return round($totalPayable / $count, 2);
     }
 
     private function payDueLoanInstallmentsForPayrollItem(PayrollRun $run, PayrollItem $item): void
