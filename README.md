@@ -292,6 +292,20 @@ Rescheduling:
 - deletes the old pending schedule and creates a new schedule
 - blocked after any installment is paid to protect payroll history
 
+## Deduction Flow
+
+Employee Deductions are for non-loan payroll deductions such as welfare fund, penalties, advance adjustment or one-time salary adjustment. Loan repayments should use the Loan module because loans need installment balance tracking.
+
+Deduction rules:
+
+- `Fixed Amount`: deducts the exact amount entered
+- `Percent of Basic Salary`: deducts the entered percent from the employee salary assignment basic salary
+- `Every Monthly Payroll`: applies only to monthly payroll runs
+- `Every Weekly Payroll`: applies only to weekly payroll runs
+- `One Payroll Only`: applies only when the deduction start date is inside the payroll run period
+- only active deductions inside the effective date range are included
+- included deductions are stored in the payslip deduction breakdown and summed into `other_deduction`
+
 For full module and permission details, see `Documentation/index.html`.
 
 ## SMTP and Outbound Email

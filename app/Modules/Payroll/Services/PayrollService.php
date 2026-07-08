@@ -540,7 +540,7 @@ class PayrollService
         ]);
 
         $gross = $basicSalary + $allowanceTotal + $bonusTotal;
-        $otherDeduction = $this->attachActiveDeductions($item, $employee->id, $periodStart, $periodEnd, $basicSalary);
+        $otherDeduction = $this->attachActiveDeductions($item, $employee->id, $periodStart, $periodEnd, $basicSalary, $run->pay_frequency);
         $totalDeduction = $loanDeduction + $otherDeduction + $providentFundDeduction + $taxDeduction;
 
         $item->update([
@@ -718,13 +718,22 @@ class PayrollService
         return round(($basicSalary * $percent) / 100, 2);
     }
 
-    private function attachActiveDeductions(PayrollItem $item, int $employeeId, CarbonImmutable $periodStart, CarbonImmutable $periodEnd, float $basicSalary): float
+    private function attachActiveDeductions(PayrollItem $item, int $employeeId, CarbonImmutable $periodStart, CarbonImmutable $periodEnd, float $basicSalary, string $payFrequency): float
     {
         $deductions = EmployeeDeduction::query()
             ->where('employee_id', $employeeId)
             ->where('is_active', true)
             ->where('effective_from', '<=', $periodEnd->toDateString())
             ->where(fn ($query) => $query->whereNull('effective_to')->orWhere('effective_to', '>=', $periodStart->toDateString()))
+            ->where(function ($query) use ($payFrequency, $periodStart, $periodEnd): void {
+                $query
+                    ->where('frequency', $payFrequency)
+                    ->orWhere(function ($oneTimeQuery) use ($periodStart, $periodEnd): void {
+                        $oneTimeQuery
+                            ->where('frequency', 'one_time')
+                            ->whereBetween('effective_from', [$periodStart->toDateString(), $periodEnd->toDateString()]);
+                    });
+            })
             ->get();
 
         $total = 0.0;

@@ -820,7 +820,7 @@ php artisan optimize:clear</code></pre>
                 <tr><td>Allowances</td><td>House rent, medical allowance, conveyance allowance and other allowance are taken from the employee salary assignment.</td></tr>
                 <tr><td>Bonus</td><td>Bonus amount is included when the bonus date falls inside the payroll period.</td></tr>
                 <tr><td>Loan deduction</td><td>Only active loans are considered. Pending installments with due dates inside the payroll period are summed into the draft payslip.</td></tr>
-                <tr><td>Other deductions</td><td>Active employee deduction records are attached to the payslip when their effective date range and frequency match the payroll period.</td></tr>
+                <tr><td>Other deductions</td><td>Active employee deduction records are attached to the payslip when their effective date range is valid and their frequency matches the payroll run. One-time deductions are included only when their start date is inside the payroll period.</td></tr>
                 <tr><td>PF and tax</td><td>Provident fund and tax are calculated from configured percentages, usually from the employee salary assignment or PF setup.</td></tr>
                 <tr><td>Draft totals</td><td>Gross, deduction total and net payable are calculated for each payslip and summarized in the payroll run.</td></tr>
             </table>
@@ -996,14 +996,24 @@ installment_amount = total_payable / installment_count</code></pre>
             <p>Deductions are employee-specific amounts deducted during payroll calculation. General deductions and loan deductions are handled separately so loan balances remain accurate.</p>
             <h3>Supported Deduction Setup</h3>
             <ul>
-                <li>Deduction type.</li>
-                <li>Calculation type: fixed or percent.</li>
-                <li>Amount.</li>
+                <li>Deduction name, such as welfare fund, penalty or advance adjustment.</li>
+                <li>Calculation method: Fixed Amount or Percent of Basic Salary.</li>
+                <li>Amount / Percent value.</li>
                 <li>Effective from and effective to.</li>
-                <li>Frequency: monthly, weekly or one-time.</li>
-                <li>Reason and comments.</li>
+                <li>Deduction frequency: Every Monthly Payroll, Every Weekly Payroll or One Payroll Only.</li>
+                <li>Reason / policy and internal notes.</li>
                 <li>Active/inactive status.</li>
             </ul>
+            <h3>How Deduction Calculation Works</h3>
+            <table>
+                <tr><th>Setup</th><th>Payroll Behavior</th></tr>
+                <tr><td>Fixed Amount</td><td>Deducts the exact amount entered. Example: 500 deducts 500 from the payslip.</td></tr>
+                <tr><td>Percent of Basic Salary</td><td>Deducts the entered percent from basic salary. Example: 5 means 5% of basic salary.</td></tr>
+                <tr><td>Every Monthly Payroll</td><td>Included only in monthly payroll runs while the deduction is active and inside the effective date range.</td></tr>
+                <tr><td>Every Weekly Payroll</td><td>Included only in weekly payroll runs while the deduction is active and inside the effective date range.</td></tr>
+                <tr><td>One Payroll Only</td><td>Included only when the deduction start date falls inside the payroll run period.</td></tr>
+            </table>
+            <p>During payroll draft generation, matched deductions are copied into the payslip deduction breakdown and summed into <code>other_deduction</code>. The amount then becomes part of <code>total_deduction</code> and reduces net payable.</p>
             <div class="note">Use Employee Deductions for regular non-loan deductions such as welfare fund, penalties, advances or adjustments. Use the Loan module for installment-based employee loans because payroll will update loan installment balances after final submission.</div>
             <div class="screenshot">
                 <strong>Screenshot Placeholder: Deductions</strong>
