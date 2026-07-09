@@ -52,7 +52,7 @@
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle">
-                            <thead><tr><th>{{ __('Period') }}</th><th>{{ __('Employee') }}</th><th>{{ __('Basic') }}</th><th>{{ __('Allowances') }}</th><th>{{ __('Bonus') }}</th><th>{{ __('Deductions') }}</th><th>{{ __('Net') }}</th><th>{{ __('Run Status') }}</th><th>{{ __('Payment') }}</th></tr></thead>
+                            <thead><tr><th>{{ __('Period') }}</th><th>{{ __('Employee') }}</th><th>{{ __('Basic') }}</th><th>{{ __('Allowances') }}</th><th>{{ __('Bonus') }}</th><th>{{ __('Employee PF') }}</th><th>{{ __('Employer PF') }}</th><th>{{ __('Deductions') }}</th><th>{{ __('Net') }}</th><th>{{ __('Run Status') }}</th><th>{{ __('Payment') }}</th></tr></thead>
                             <tbody>
                                 @forelse($items as $item)
                                     <tr>
@@ -61,13 +61,15 @@
                                         <td>{{ number_format((float) $item->basic_salary, 2) }}</td>
                                         <td>{{ number_format((float) $item->allowance_total, 2) }}</td>
                                         <td>{{ number_format((float) $item->bonus_total, 2) }}</td>
+                                        <td>{{ number_format((float) $item->provident_fund_deduction, 2) }}</td>
+                                        <td>{{ number_format((float) $item->employer_pf_contribution, 2) }}</td>
                                         <td>{{ number_format((float) $item->total_deduction, 2) }}</td>
                                         <td>{{ number_format((float) $item->net_payable, 2) }}</td>
                                         <td><span class="badge bg-secondary">{{ __(ucfirst($item->payrollRun?->status ?? '-')) }}</span></td>
                                         <td>{{ __(ucfirst($item->payment_status)) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="9" class="text-center">{{ __('No payroll records found.') }}</td></tr>
+                                    <tr><td colspan="11" class="text-center">{{ __('No payroll records found.') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

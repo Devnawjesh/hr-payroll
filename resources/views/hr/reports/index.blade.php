@@ -51,6 +51,16 @@
                         </a>
                     </div>
                 @endif
+                @if(auth()->user()?->hasAnyPermission(['provident_fund.view', 'provident_fund.report', 'payroll.manage-pf']))
+                    <div class="col-md-3">
+                        <a href="{{ route('reports.provident-fund') }}" class="card no-border text-decoration-none">
+                            <div class="content_wrapper content-padded">
+                                <h5 class="table_banner_title mb-1">{{ __('Provident Fund Report') }}</h5>
+                                <p class="text-muted mb-0">{{ __('Yearly employee and employer PF contributions.') }}</p>
+                            </div>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

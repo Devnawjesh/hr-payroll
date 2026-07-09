@@ -228,6 +228,8 @@ Assignment rules:
 
 Payroll is generated as a draft first. HR or Payroll reviews the draft payslips, then final submits the payroll run. Final submission posts salary-linked effects such as due loan installments and provident fund transactions.
 
+Provident Fund setup supports both employee and employer contributions. Employee PF is deducted from salary. Employer PF is company contribution and does not reduce employee net salary. Both are calculated from the active employee basic salary for the payroll period, so a salary increase automatically changes both contribution amounts in future payroll runs.
+
 Payroll run and payslip status are separate:
 
 - payroll run `draft`: generated but not final submitted

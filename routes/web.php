@@ -141,13 +141,15 @@ Route::middleware(['auth', 'portal.access'])->group(function (): void {
     });
 
     Route::prefix('reports')->name('reports.')->group(function (): void {
-        Route::get('/', [ReportController::class, 'index'])->middleware('permission:report.view,report.employee,report.attendance,report.leave,report.payroll,employee.view,attendance.report,leave.report,payroll.report')->name('index');
+        Route::get('/', [ReportController::class, 'index'])->middleware('permission:report.view,report.employee,report.attendance,report.leave,report.payroll,employee.view,attendance.report,leave.report,payroll.report,provident_fund.view,provident_fund.report,payroll.manage-pf')->name('index');
         Route::get('/employees', [ReportController::class, 'employees'])->middleware('permission:report.employee,report.view,employee.view')->name('employees');
         Route::get('/employees/export', [ReportController::class, 'exportEmployees'])->middleware('permission:report.export,report.employee,employee.view')->name('employees.export');
         Route::get('/attendance', [ReportController::class, 'attendance'])->middleware('permission:report.attendance,report.view,attendance.report,attendance.view,attendance.manage')->name('attendance');
         Route::get('/attendance/export', [ReportController::class, 'exportAttendance'])->middleware('permission:report.export,report.attendance,attendance.report,attendance.view,attendance.manage')->name('attendance.export');
         Route::get('/payroll', [ReportController::class, 'payroll'])->middleware('permission:report.payroll,report.view,payroll.report,payslip.view')->name('payroll');
         Route::get('/payroll/export', [ReportController::class, 'exportPayroll'])->middleware('permission:report.export,report.payroll,payroll.report,payslip.export,payslip.view')->name('payroll.export');
+        Route::get('/provident-fund', [ReportController::class, 'providentFund'])->middleware('permission:provident_fund.view,provident_fund.report,payroll.manage-pf')->name('provident-fund');
+        Route::get('/provident-fund/export', [ReportController::class, 'exportProvidentFund'])->middleware('permission:report.export,provident_fund.report,payroll.manage-pf')->name('provident-fund.export');
     });
 
     Route::prefix('teams')->name('teams.')->group(function (): void {

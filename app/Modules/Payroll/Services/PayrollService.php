@@ -523,7 +523,9 @@ class PayrollService
             ->whereBetween('due_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
             ->where('status', 'pending')
             ->sum('amount');
-        $providentFundDeduction = $this->providentFundDeduction($employee->id, $basicSalary, $assignment);
+        $providentFund = $this->providentFundContributions($employee->id, $basicSalary, $assignment, $periodEnd);
+        $providentFundDeduction = $providentFund['employee'];
+        $employerProvidentFundContribution = $providentFund['employer'];
         $taxDeduction = round(($basicSalary * (float) ($assignment?->tax_percent ?? 0)) / 100, 2);
 
         $item = PayrollItem::query()->create([
@@ -535,6 +537,7 @@ class PayrollService
             'bonus_total' => $bonusTotal,
             'loan_deduction' => $loanDeduction,
             'provident_fund_deduction' => $providentFundDeduction,
+            'employer_pf_contribution' => $employerProvidentFundContribution,
             'tax_deduction' => $taxDeduction,
             'payment_status' => 'pending',
         ]);
@@ -639,21 +642,34 @@ class PayrollService
 
     private function recordProvidentFundContribution(PayrollRun $run, PayrollItem $item, int $processedBy): void
     {
-        if ((float) $item->provident_fund_deduction <= 0) {
+        $employeeContribution = (float) $item->provident_fund_deduction;
+        $employerContribution = (float) $item->employer_pf_contribution;
+
+        if ($employeeContribution <= 0 && $employerContribution <= 0) {
             return;
         }
+
+        $referenceNo = 'PF-' . $run->id . '-' . $item->employee_id;
+        $balanceAfter = $this->providentFundBalanceAfter(
+            (int) $item->employee_id,
+            (string) $run->period_end,
+            $referenceNo,
+            $employeeContribution,
+            $employerContribution
+        );
 
         ProvidentFundTransaction::query()->updateOrCreate(
             [
                 'payroll_run_id' => $run->id,
                 'employee_id' => $item->employee_id,
-                'reference_no' => 'PF-' . $run->id . '-' . $item->employee_id,
+                'reference_no' => $referenceNo,
             ],
             [
                 'transaction_date' => $run->period_end,
                 'transaction_type' => 'contribution',
-                'employee_contribution' => $item->provident_fund_deduction,
-                'employer_contribution' => $item->provident_fund_deduction,
+                'employee_contribution' => $employeeContribution,
+                'employer_contribution' => $employerContribution,
+                'balance_after' => $balanceAfter,
                 'reason' => 'Payroll provident fund contribution',
                 'recorded_by' => $processedBy,
             ]
@@ -710,12 +726,55 @@ class PayrollService
         return trim($employee->first_name . ' ' . $employee->last_name) . ' (' . $employee->employee_code . ')';
     }
 
-    private function providentFundDeduction(int $employeeId, float $basicSalary, ?object $assignment): float
+    /**
+     * @return array{employee: float, employer: float}
+     */
+    private function providentFundContributions(int $employeeId, float $basicSalary, ?object $assignment, CarbonImmutable $periodEnd): array
     {
-        $fund = EmployeeProvidentFund::query()->where('employee_id', $employeeId)->first();
-        $percent = (float) ($fund?->employee_contribution_percent ?? $assignment?->provident_fund_percent ?? 0);
+        $fund = EmployeeProvidentFund::query()
+            ->where('employee_id', $employeeId)
+            ->where(fn ($query) => $query->whereNull('effective_from')->orWhere('effective_from', '<=', $periodEnd->toDateString()))
+            ->first();
 
-        return round(($basicSalary * $percent) / 100, 2);
+        $fallbackPercent = (float) ($assignment?->provident_fund_percent ?? 0);
+        $employeePercent = (float) ($fund?->employee_contribution_percent ?? $fallbackPercent);
+        $employerPercent = (float) ($fund?->employer_contribution_percent ?? $fallbackPercent);
+
+        return [
+            'employee' => round(($basicSalary * $employeePercent) / 100, 2),
+            'employer' => round(($basicSalary * $employerPercent) / 100, 2),
+        ];
+    }
+
+    private function providentFundBalanceAfter(int $employeeId, string $transactionDate, string $referenceNo, float $employeeContribution, float $employerContribution): float
+    {
+        $openingBalance = (float) EmployeeProvidentFund::query()
+            ->where('employee_id', $employeeId)
+            ->where(fn ($query) => $query->whereNull('effective_from')->orWhere('effective_from', '<=', $transactionDate))
+            ->value('opening_balance');
+
+        $totals = ProvidentFundTransaction::query()
+            ->where('employee_id', $employeeId)
+            ->where('transaction_date', '<=', $transactionDate)
+            ->where(fn ($query) => $query->whereNull('reference_no')->orWhere('reference_no', '!=', $referenceNo))
+            ->selectRaw('
+                COALESCE(SUM(employee_contribution), 0) as employee_contribution_total,
+                COALESCE(SUM(employer_contribution), 0) as employer_contribution_total,
+                COALESCE(SUM(adjustment_amount), 0) as adjustment_total,
+                COALESCE(SUM(withdrawal_amount), 0) as withdrawal_total
+            ')
+            ->first();
+
+        return round(
+            $openingBalance
+            + (float) ($totals?->employee_contribution_total ?? 0)
+            + (float) ($totals?->employer_contribution_total ?? 0)
+            + (float) ($totals?->adjustment_total ?? 0)
+            - (float) ($totals?->withdrawal_total ?? 0)
+            + $employeeContribution
+            + $employerContribution,
+            2
+        );
     }
 
     private function attachActiveDeductions(PayrollItem $item, int $employeeId, CarbonImmutable $periodStart, CarbonImmutable $periodEnd, float $basicSalary, string $payFrequency): float

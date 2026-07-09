@@ -152,6 +152,7 @@ return new class extends Migration
             $table->decimal('loan_deduction', 14, 2)->default(0);
             $table->decimal('other_deduction', 14, 2)->default(0);
             $table->decimal('provident_fund_deduction', 14, 2)->default(0);
+            $table->decimal('employer_pf_contribution', 14, 2)->default(0);
             $table->decimal('tax_deduction', 14, 2)->default(0);
             $table->decimal('total_deduction', 14, 2)->default(0);
             $table->decimal('net_payable', 14, 2)->default(0);

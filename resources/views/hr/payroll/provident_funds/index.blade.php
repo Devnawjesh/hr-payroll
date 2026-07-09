@@ -11,18 +11,33 @@
                     @if($canManageProvidentFund ?? false)
                         <form method="POST" action="{{ route('payroll.provident-funds.store') }}" class="row g-2 mb-4">
                             @csrf
-                            <div class="col-md-3"><select name="employee_id" class="form-control js-example-basic-single" required><option value="">{{ __('Employee') }}</option>@foreach($employees as $employee)<option value="{{ $employee->id }}">{{ trim($employee->first_name.' '.$employee->last_name) }} ({{ $employee->employee_code }})</option>@endforeach</select></div>
-                            <div class="col-md-2"><input type="number" step="0.01" min="0" max="100" name="employee_contribution_percent" class="form-control" placeholder="{{ __('Employee %') }}" required></div>
-                            <div class="col-md-2"><input type="number" step="0.01" min="0" max="100" name="employer_contribution_percent" class="form-control" placeholder="{{ __('Employer %') }}" required></div>
-                            <div class="col-md-2"><input type="number" step="0.01" min="0" name="opening_balance" class="form-control" value="0" placeholder="{{ __('Opening balance') }}"></div>
-                            <div class="col-md-2"><input type="text" name="effective_from" class="form-control datetimepicker" value="{{ now()->toDateString() }}" placeholder="{{ __('Effective from') }}"></div>
-                            <div class="col-md-1"><button class="btn btn-custom w-100" type="submit"><i class="icon-check"></i></button></div>
+                            <div class="col-md-3">
+                                <label>{{ __('Employee') }}</label>
+                                <select name="employee_id" class="form-control js-example-basic-single" title="{{ __('Select the employee this provident fund setup belongs to') }}" required><option value="">{{ __('Select Employee') }}</option>@foreach($employees as $employee)<option value="{{ $employee->id }}">{{ trim($employee->first_name.' '.$employee->last_name) }} ({{ $employee->employee_code }})</option>@endforeach</select>
+                            </div>
+                            <div class="col-md-2">
+                                <label>{{ __('Employee PF %') }}</label>
+                                <input type="number" step="0.01" min="0" max="100" name="employee_contribution_percent" class="form-control" placeholder="{{ __('Deduct from salary') }}" title="{{ __('Percent deducted from employee basic salary') }}" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label>{{ __('Employer PF %') }}</label>
+                                <input type="number" step="0.01" min="0" max="100" name="employer_contribution_percent" class="form-control" placeholder="{{ __('Company contribution') }}" title="{{ __('Percent contributed by the company without reducing net salary') }}" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label>{{ __('Opening PF Balance') }}</label>
+                                <input type="number" step="0.01" min="0" name="opening_balance" class="form-control" value="0" placeholder="{{ __('Existing balance') }}" title="{{ __('Starting PF balance before payroll transactions') }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label>{{ __('Effective From') }}</label>
+                                <input type="text" name="effective_from" class="form-control datetimepicker" value="{{ now()->toDateString() }}" placeholder="{{ __('Start date') }}" title="{{ __('Payroll uses this setup from this date') }}">
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end"><button class="btn btn-custom w-100" type="submit"><i class="icon-check"></i> {{ __('Save') }}</button></div>
                         </form>
                     @endif
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle">
-                            <thead><tr><th>{{ __('Employee') }}</th><th>{{ __('Employee %') }}</th><th>{{ __('Employer %') }}</th><th>{{ __('Opening Balance') }}</th><th>{{ __('Effective From') }}</th></tr></thead>
+                            <thead><tr><th>{{ __('Employee') }}</th><th>{{ __('Employee PF %') }}</th><th>{{ __('Employer PF %') }}</th><th>{{ __('Opening PF Balance') }}</th><th>{{ __('Effective From') }}</th></tr></thead>
                             <tbody>
                                 @forelse($funds as $fund)
                                     <tr>

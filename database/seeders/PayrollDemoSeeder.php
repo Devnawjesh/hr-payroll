@@ -274,6 +274,7 @@ class PayrollDemoSeeder extends Seeder
             + (float) $template->conveyance_allowance
             + (float) $template->other_allowance;
         $providentFundDeduction = round(($basicSalary * (float) $template->provident_fund_percent) / 100, 2);
+        $employerProvidentFundContribution = $providentFundDeduction;
         $taxDeduction = round(($basicSalary * (float) $template->tax_percent) / 100, 2);
         $totalDeduction = $loanDeduction + $otherDeduction + $providentFundDeduction + $taxDeduction;
         $netPayable = ($basicSalary + $allowanceTotal + $bonusTotal) - $totalDeduction;
@@ -291,6 +292,7 @@ class PayrollDemoSeeder extends Seeder
                 'loan_deduction' => $loanDeduction,
                 'other_deduction' => $otherDeduction,
                 'provident_fund_deduction' => $providentFundDeduction,
+                'employer_pf_contribution' => $employerProvidentFundContribution,
                 'tax_deduction' => $taxDeduction,
                 'total_deduction' => $totalDeduction,
                 'net_payable' => $netPayable,
@@ -318,10 +320,10 @@ class PayrollDemoSeeder extends Seeder
             'transaction_date' => '2026-05-31',
             'transaction_type' => 'contribution',
             'employee_contribution' => $providentFundDeduction,
-            'employer_contribution' => $providentFundDeduction,
+            'employer_contribution' => $employerProvidentFundContribution,
             'withdrawal_amount' => 0,
             'adjustment_amount' => 0,
-            'balance_after' => null,
+            'balance_after' => (10000 + ($index * 2500)) + $providentFundDeduction + $employerProvidentFundContribution,
             'reference_no' => 'DEMO-PF-2026-05-' . $employee->employee_code,
             'reason' => 'Monthly payroll contribution',
             'comments' => 'Demo provident fund transaction.',

@@ -177,6 +177,9 @@
                             @if($s['canPayrollManagePf'] ?? false)
                                 <li class="{{ request()->routeIs('payroll.provident-funds.*') ? 'active' : '' }}"><a href="{{ route('payroll.provident-funds.index') }}">{{ __('Provident Fund') }}</a></li>
                             @endif
+                            @if($s['canProvidentFundReportMenu'] ?? false)
+                                <li class="{{ request()->routeIs('reports.provident-fund') ? 'active' : '' }}"><a href="{{ route('reports.provident-fund') }}">{{ __('PF Report') }}</a></li>
+                            @endif
                             @if(($s['canPayrollReport'] ?? false) && !($s['canPayrollView'] ?? false))
                                 <li class="{{ request()->routeIs('reports.payroll') ? 'active' : '' }}"><a href="{{ route('reports.payroll') }}">{{ __('Payslips') }}</a></li>
                             @endif
@@ -217,9 +220,12 @@
                         @if($s['canLeaveReportMenu'] ?? false)
                             <li class="{{ request()->routeIs('leave-reports.*') ? 'active' : '' }}"><a href="{{ route('leave-reports.index') }}">{{ __('Leave Report') }}</a></li>
                         @endif
-                        @if($s['canPayrollReportMenu'] ?? false)
+                            @if($s['canPayrollReportMenu'] ?? false)
                             <li class="{{ request()->routeIs('reports.payroll') ? 'active' : '' }}"><a href="{{ route('reports.payroll') }}">{{ __('Payroll Report') }}</a></li>
-                        @endif
+                            @endif
+                            @if($s['canProvidentFundReportMenu'] ?? false)
+                            <li class="{{ request()->routeIs('reports.provident-fund') ? 'active' : '' }}"><a href="{{ route('reports.provident-fund') }}">{{ __('Provident Fund Report') }}</a></li>
+                            @endif
                     </ul>
                 </li>
                 @endif

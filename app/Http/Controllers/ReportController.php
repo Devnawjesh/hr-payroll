@@ -6,6 +6,7 @@ use App\Models\AttendanceLog;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\PayrollItem;
+use App\Models\ProvidentFundTransaction;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
@@ -155,7 +156,8 @@ class ReportController extends Controller
             'Bonus',
             'Loan Deduction',
             'Other Deduction',
-            'PF',
+            'Employee PF',
+            'Employer PF',
             'Tax',
             'Total Deduction',
             'Net Payable',
@@ -171,11 +173,70 @@ class ReportController extends Controller
             $item->loan_deduction,
             $item->other_deduction,
             $item->provident_fund_deduction,
+            $item->employer_pf_contribution,
             $item->tax_deduction,
             $item->total_deduction,
             $item->net_payable,
             $item->payrollRun?->status ?? '',
             $item->payment_status,
+        ])->all());
+    }
+
+    public function providentFund(Request $request): View
+    {
+        $filters = $this->providentFundFilters($request);
+        $employeeIds = $this->providentFundEmployeeScope($request->user());
+        $this->normalizeEmployeeFilter($filters, $employeeIds);
+        $query = $this->providentFundQuery($filters, $employeeIds);
+
+        return view('hr.reports.provident_fund', [
+            'transactions' => (clone $query)->paginate($filters['per_page'])->withQueryString(),
+            'employees' => $this->employeesForSelect($employeeIds),
+            'departments' => $this->departmentsForSelect(),
+            'filters' => $filters,
+            'canViewAllProvidentFund' => $employeeIds === null,
+            'summary' => [
+                'employee_contribution' => (clone $query)->sum('employee_contribution'),
+                'employer_contribution' => (clone $query)->sum('employer_contribution'),
+                'withdrawal' => (clone $query)->sum('withdrawal_amount'),
+                'adjustment' => (clone $query)->sum('adjustment_amount'),
+            ],
+        ]);
+    }
+
+    public function exportProvidentFund(Request $request): StreamedResponse
+    {
+        $filters = $this->providentFundFilters($request, false);
+        $employeeIds = $this->providentFundEmployeeScope($request->user());
+        $this->normalizeEmployeeFilter($filters, $employeeIds);
+        $rows = $this->providentFundQuery($filters, $employeeIds)->get();
+
+        return $this->csv('provident_fund_report_' . $filters['year'] . '.csv', [
+            'Date',
+            'Employee Code',
+            'Employee',
+            'Department',
+            'Type',
+            'Employee Contribution',
+            'Employer Contribution',
+            'Withdrawal',
+            'Adjustment',
+            'Balance After',
+            'Reference',
+            'Reason',
+        ], $rows->map(fn (ProvidentFundTransaction $transaction): array => [
+            $transaction->transaction_date,
+            $transaction->employee?->employee_code ?? '',
+            trim(($transaction->employee?->first_name ?? '') . ' ' . ($transaction->employee?->last_name ?? '')),
+            $transaction->employee?->department?->name ?? '',
+            $transaction->transaction_type,
+            $transaction->employee_contribution,
+            $transaction->employer_contribution,
+            $transaction->withdrawal_amount,
+            $transaction->adjustment_amount,
+            $transaction->balance_after,
+            $transaction->reference_no,
+            $transaction->reason,
         ])->all());
     }
 
@@ -278,6 +339,38 @@ class ReportController extends Controller
             ->orderByDesc('id');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function providentFundFilters(Request $request, bool $paginate = true): array
+    {
+        return [
+            'year' => max(2000, min(2100, (int) $request->input('year', CarbonImmutable::now()->year))),
+            'department_id' => (int) $request->input('department_id', 0),
+            'employee_id' => (int) $request->input('employee_id', 0),
+            'per_page' => $paginate ? max(10, min(100, (int) $request->input('per_page', 20))) : 1000,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return Builder<ProvidentFundTransaction>
+     */
+    private function providentFundQuery(array $filters, ?array $employeeIds = null): Builder
+    {
+        $yearStart = CarbonImmutable::create((int) $filters['year'], 1, 1)->toDateString();
+        $yearEnd = CarbonImmutable::create((int) $filters['year'], 12, 31)->toDateString();
+
+        return ProvidentFundTransaction::query()
+            ->with(['employee:id,employee_code,first_name,last_name,department_id', 'employee.department:id,name', 'payrollRun:id,period_label,status'])
+            ->whereBetween('transaction_date', [$yearStart, $yearEnd])
+            ->when($employeeIds !== null, fn (Builder $query) => $query->whereIn('employee_id', $employeeIds))
+            ->when((int) $filters['employee_id'] > 0, fn (Builder $query) => $query->where('employee_id', (int) $filters['employee_id']))
+            ->when((int) $filters['department_id'] > 0, fn (Builder $query) => $query->whereHas('employee', fn (Builder $employeeQuery) => $employeeQuery->where('department_id', (int) $filters['department_id'])))
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('id');
+    }
+
     private function employeesForSelect(?array $employeeIds = null): \Illuminate\Support\Collection
     {
         return Employee::query()
@@ -335,6 +428,24 @@ class ReportController extends Controller
     }
 
     /**
+     * @return array<int, int>|null
+     */
+    private function providentFundEmployeeScope(?User $user): ?array
+    {
+        if (! $user) {
+            return [];
+        }
+
+        if ($user->hasAnyPermission($this->globalProvidentFundReportPermissions())) {
+            return null;
+        }
+
+        $employeeId = (int) ($user->employee?->id ?? 0);
+
+        return $employeeId > 0 ? [$employeeId] : [];
+    }
+
+    /**
      * Payroll is confidential, so generic report access must not unlock company-wide payroll rows.
      *
      * @return array<int, string>
@@ -350,6 +461,21 @@ class ReportController extends Controller
             'payroll_run.generate',
             'payroll_run.approve',
             'payroll_run.mark-paid',
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function globalProvidentFundReportPermissions(): array
+    {
+        return [
+            'provident_fund.report',
+            'payroll.manage-pf',
+            'payroll.report',
+            'report.payroll',
+            'payroll.view',
+            'payroll.generate',
         ];
     }
 

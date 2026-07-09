@@ -95,6 +95,7 @@ class RolePermissionSeeder extends Seeder
                     'file.view',
                     'file.preview',
                     'file.comment',
+                    'provident_fund.view',
                     'notification.view',
                 ])->pluck('id')
             );

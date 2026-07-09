@@ -25,7 +25,8 @@
                                 <tr><th>{{ __('Bonus Total') }}</th><td>{{ number_format((float)$item->bonus_total, 2) }}</td></tr>
                                 <tr><th>{{ __('Loan Deduction') }}</th><td>{{ number_format((float)$item->loan_deduction, 2) }}</td></tr>
                                 <tr><th>{{ __('Other Deduction') }}</th><td>{{ number_format((float)$item->other_deduction, 2) }}</td></tr>
-                                <tr><th>{{ __('Provident Fund Deduction') }}</th><td>{{ number_format((float)$item->provident_fund_deduction, 2) }}</td></tr>
+                                <tr><th>{{ __('Employee PF Deduction') }}</th><td>{{ number_format((float)$item->provident_fund_deduction, 2) }}</td></tr>
+                                <tr><th>{{ __('Employer PF Contribution') }}</th><td>{{ number_format((float)$item->employer_pf_contribution, 2) }}</td></tr>
                                 <tr><th>{{ __('Tax Deduction') }}</th><td>{{ number_format((float)$item->tax_deduction, 2) }}</td></tr>
                                 <tr><th>{{ __('Total Deduction') }}</th><td>{{ number_format((float)$item->total_deduction, 2) }}</td></tr>
                                 <tr><th>{{ __('Net Payable') }}</th><td><strong>{{ number_format((float)$item->net_payable, 2) }}</strong></td></tr>

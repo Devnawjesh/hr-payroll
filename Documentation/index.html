@@ -821,7 +821,7 @@ php artisan optimize:clear</code></pre>
                 <tr><td>Bonus</td><td>Bonus amount is included when the bonus date falls inside the payroll period.</td></tr>
                 <tr><td>Loan deduction</td><td>Only active loans are considered. Pending installments with due dates inside the payroll period are summed into the draft payslip.</td></tr>
                 <tr><td>Other deductions</td><td>Active employee deduction records are attached to the payslip when their effective date range is valid and their frequency matches the payroll run. One-time deductions are included only when their start date is inside the payroll period.</td></tr>
-                <tr><td>PF and tax</td><td>Provident fund and tax are calculated from configured percentages, usually from the employee salary assignment or PF setup.</td></tr>
+                <tr><td>PF and tax</td><td>Employee PF deduction and employer PF contribution are calculated from configured percentages and the active employee basic salary. Tax is calculated from the configured tax percentage.</td></tr>
                 <tr><td>Draft totals</td><td>Gross, deduction total and net payable are calculated for each payslip and summarized in the payroll run.</td></tr>
             </table>
             <div class="note">Loan balances are not reduced during draft generation. Loan installments are marked paid only when the payroll run is finalized, because the deduction becomes real only when salary is processed.</div>
@@ -1023,12 +1023,31 @@ installment_amount = total_payable / installment_count</code></pre>
 
         <section id="provident-fund">
             <h2>Provident Fund</h2>
-            <p>Provident Fund setup defines employee and employer contribution percentages and opening balance.</p>
+            <p>Provident Fund setup defines employee contribution percentage, employer contribution percentage, opening balance and effective date.</p>
             <h3>How PF Works</h3>
             <ul>
-                <li>PF percentage can come from employee PF setup or employee salary assignment.</li>
-                <li>During final payroll submission, PF contribution transactions are posted.</li>
-                <li>PF transactions can be used for reports and balance tracking.</li>
+                <li>Employee PF % is deducted from employee basic salary and reduces net payable.</li>
+                <li>Employer PF % is company contribution and does not reduce employee net payable.</li>
+                <li>Both contributions are calculated from the active basic salary for the payroll period.</li>
+                <li>If salary increases through a new employee salary assignment, future payroll runs automatically calculate higher PF amounts.</li>
+                <li>PF setup is used when its effective date is empty or before the payroll period end date. If no PF setup is active, payroll falls back to the employee salary assignment PF percentage.</li>
+                <li>During final payroll submission, PF contribution transactions are posted with employee contribution, employer contribution and balance after.</li>
+                <li>PF transactions can be used for yearly self-service and HR reports.</li>
+            </ul>
+            <h3>Example</h3>
+            <table>
+                <tr><th>Basic Salary</th><th>Employee PF %</th><th>Employee Salary Deduction</th><th>Employer PF %</th><th>Company Contribution</th></tr>
+                <tr><td>50,000</td><td>8%</td><td>4,000</td><td>8%</td><td>4,000</td></tr>
+                <tr><td>60,000</td><td>8%</td><td>4,800</td><td>8%</td><td>4,800</td></tr>
+            </table>
+            <h3>PF Report</h3>
+            <ul>
+                <li>Report route: <code>/reports/provident-fund</code>.</li>
+                <li>Export route: <code>/reports/provident-fund/export</code>.</li>
+                <li>Employees can view their own yearly PF report when <code>provident_fund.view</code> is assigned.</li>
+                <li>HR, Admin, Payroll or Finance users with <code>provident_fund.report</code> or <code>payroll.manage-pf</code> can filter by year, department and employee.</li>
+                <li>CSV export is available to users with <code>report.export</code>, <code>provident_fund.report</code> or <code>payroll.manage-pf</code>.</li>
+                <li>The report shows employee contribution, employer contribution, withdrawals, adjustments and balance after each transaction.</li>
             </ul>
             <div class="screenshot">
                 <strong>Screenshot Placeholder: Provident Fund</strong>
@@ -1192,6 +1211,7 @@ Net Payable = Gross - Total Deduction</code></pre>
                 <tr><td><code>employee_deduction.view</code></td><td>Employee should view own deductions.</td><td>Own deduction data only unless management permissions are assigned.</td></tr>
                 <tr><td><code>payroll.manage-deduction</code></td><td>Payroll staff should create, update or remove employee deductions.</td><td>Company-wide deduction management access.</td></tr>
                 <tr><td><code>provident_fund.view</code></td><td>User should see PF details.</td><td>Self or scoped access depending on assigned management permissions.</td></tr>
+                <tr><td><code>provident_fund.report</code></td><td>HR, Payroll, Finance or Admin should see company PF reports.</td><td>Company-wide PF report access with department and employee filters.</td></tr>
                 <tr><td><code>payroll.manage-pf</code></td><td>Payroll staff should manage PF setup and transactions.</td><td>Company-wide provident fund management access.</td></tr>
             </table>
             <h3>Recommended Role Assignment</h3>
@@ -1200,7 +1220,7 @@ Net Payable = Gross - Total Deduction</code></pre>
                 <tr><td>Admin / Super Admin</td><td>All permissions.</td><td>-</td></tr>
                 <tr><td>HR Admin / HR Manager</td><td>Employee, attendance, leave and HR reports. Add payroll permissions only if HR handles salary processing.</td><td>Global payroll permissions if HR should not see salary.</td></tr>
                 <tr><td>Payroll Manager</td><td><code>payroll.view</code>, <code>payroll.generate</code>, <code>payroll_run.*</code>, <code>payroll.report</code>, salary, bonus, loan, deduction, PF and payslip permissions.</td><td>-</td></tr>
-                <tr><td>Finance Manager</td><td>Payroll report, payslip export/print, loan, deduction and payment status permissions if finance processes salary payment.</td><td>Employee HR administration permissions unless required.</td></tr>
+                <tr><td>Finance Manager</td><td>Payroll report, payslip export/print, loan, deduction, PF report and payment status permissions if finance processes salary payment.</td><td>Employee HR administration permissions unless required.</td></tr>
                 <tr><td>Department Head / Supervisor</td><td>Own payslip, own loan, own deductions, team attendance/leave approval, team work scope. Loan supervisor approval only if part of loan workflow.</td><td><code>payroll.view</code>, <code>payroll.report</code>, <code>report.payroll</code>, <code>payroll.manage-deduction</code>, <code>payroll.manage-loan</code>.</td></tr>
                 <tr><td>Employee</td><td>Own profile, own attendance, own leave, own tasks/projects, own payslips, own loans, own deductions and own PF.</td><td>Any global payroll, loan, deduction or report permission.</td></tr>
                 <tr><td>Auditor</td><td>Read-only report permissions only when company policy allows salary auditing.</td><td>Create, update, delete, generate or final approval permissions.</td></tr>
@@ -1215,7 +1235,7 @@ Net Payable = Gross - Total Deduction</code></pre>
                 <tr><td>Project Manager / Team Lead</td><td>Manages work delivery. Creates or updates teams/projects/tasks and tracks assigned members.</td><td>Teams, Projects, Tasks, Files, Comments, Work reports.</td><td>Assigned teams/projects/tasks and members. No HR payroll access by default.</td></tr>
                 <tr><td>HR Admin / HR Manager</td><td>Maintains employee records and HR policies. Handles employee lifecycle from onboarding to resignation and HR reporting.</td><td>Employees, Departments, Designations, Attendance administration, Leave setup, Profile update approvals, Resignation approvals, Announcements, Holidays, HR reports.</td><td>Company-wide HR records. Payroll access only if salary processing responsibility is assigned.</td></tr>
                 <tr><td>Payroll Manager</td><td>Maintains salary setup and processes payroll. Reviews draft payroll, final submits payroll and manages salary-linked deductions.</td><td>Salary Grades, Salary Templates, Employee Salary Assignments, Bonuses, Loans, Deductions, Provident Fund, Payroll Runs, Payslips, Payroll Reports.</td><td>Company-wide payroll and finance records.</td></tr>
-                <tr><td>Finance Manager</td><td>Reviews salary payable, loan recovery and payment status. Can export reports and mark payment status when assigned.</td><td>Payroll Reports, Payslips, Loans, Deductions, Provident Fund, Billing/Expenses if enabled.</td><td>Company-wide finance records only when granted by permission.</td></tr>
+                <tr><td>Finance Manager</td><td>Reviews salary payable, loan recovery, employer PF contribution and payment status. Can export reports and mark payment status when assigned.</td><td>Payroll Reports, Payslips, Loans, Deductions, Provident Fund Report, Billing/Expenses if enabled.</td><td>Company-wide finance records only when granted by permission.</td></tr>
                 <tr><td>Admin / Super Admin</td><td>System owner. Configures roles, permissions, users, settings, seed data and global module access.</td><td>All modules, User Management, Roles, Permissions, Settings, Audit, Reports.</td><td>Company-wide system access.</td></tr>
             </table>
             <h3>Employee Lifecycle by Role</h3>

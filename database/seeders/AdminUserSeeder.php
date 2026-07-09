@@ -353,6 +353,9 @@ class AdminUserSeeder extends Seeder
                 'permissions' => [
                     'settings.view',
                     'audit.view',
+                    'payroll.report',
+                    'provident_fund.view',
+                    'provident_fund.report',
                 ],
             ],
             'department-head' => [
