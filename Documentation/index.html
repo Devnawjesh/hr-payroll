@@ -334,6 +334,7 @@
             <a href="#requirements">Requirements</a>
             <a href="#installation">Installation</a>
             <a href="#default-seed">Default Seed Data</a>
+            <a href="#first-admin-setup">First Admin Setup</a>
             <a href="#login">Login and Access</a>
             <a href="#employee-login-setup">Employee Login Setup</a>
             <a href="#navigation">Navigation</a>
@@ -470,6 +471,9 @@ DEFAULT_ADMIN_PASSWORD=password</code></pre>
             <h4>Single Default Seed Command</h4>
             <pre><code>php artisan db:seed --class=AdminUserSeeder</code></pre>
             <p>Use this command when you need the default permissions, role templates, role-permission assignments and one admin user with full access.</p>
+            <h4>Refresh Role Permissions Only</h4>
+            <pre><code>php artisan db:seed --class=RolePermissionSeeder</code></pre>
+            <p>This command recreates missing permissions if needed, creates the same default role templates and syncs the default role-permission assignments without creating the default admin user.</p>
             <h4>Default Organization Roles</h4>
             <table>
                 <tr><th>Role</th><th>Default Purpose</th></tr>
@@ -512,6 +516,40 @@ php artisan optimize:clear</code></pre>
             </table>
 
             <div class="warning">Change the default admin password after first login, or set a secure <code>DEFAULT_ADMIN_PASSWORD</code> before running the seed command.</div>
+        </section>
+
+        <section id="first-admin-setup">
+            <h2>First Admin Setup After Login</h2>
+            <p>After installation and <code>AdminUserSeeder</code>, login with the default admin account and complete the system setup before allowing employee or manager access.</p>
+            <h3>Recommended Setup Order</h3>
+            <ol>
+                <li>Change the default admin password from the dashboard password screen.</li>
+                <li>Open <strong>Settings</strong> and update company profile, logo, favicon, contact information, timezone, currency and email settings.</li>
+                <li>Create core organization records: departments, designations and reporting structure.</li>
+                <li>Create salary grades with salary ranges and band names.</li>
+                <li>Review default roles and permissions. Keep Admin/Super Admin full access, then adjust HR Admin, Department Head, Payroll Manager, Finance Manager and Employee roles based on company policy.</li>
+                <li>Create or approve user accounts only after the employee profile is created and linked to the user account.</li>
+                <li>Create employee profiles with department, designation, manager/reporting line, salary grade, employment status and linked user account.</li>
+                <li>Configure leave categories, leave policies, holidays and attendance rules before employees start applying for leave or clocking attendance.</li>
+                <li>Create payroll setup records: salary templates, employee salary assignments, provident fund setup, recurring deductions and opening loan records if needed.</li>
+                <li>Run a small test payroll draft for one employee and review salary, deduction, loan, PF, tax and net payable before processing a full payroll run.</li>
+            </ol>
+            <h3>Setup Checklist</h3>
+            <table>
+                <tr><th>Area</th><th>Admin Action</th><th>Why It Matters</th></tr>
+                <tr><td>Settings</td><td>Configure company name, branding, SMTP/email and basic app settings.</td><td>Emails, documents and UI branding use these values.</td></tr>
+                <tr><td>Departments</td><td>Add departments and assign department heads after employee profiles exist.</td><td>Department scope controls reports, approvals and employee visibility.</td></tr>
+                <tr><td>Designations</td><td>Add job titles under the correct department where applicable.</td><td>Employee records and reports use designation for staff classification.</td></tr>
+                <tr><td>Salary Grades</td><td>Create grade names, band names and min/max salary ranges.</td><td>Employee salary assignment validates basic salary against the grade range.</td></tr>
+                <tr><td>Roles</td><td>Review default role templates and remove permissions not needed by each role.</td><td>Prevents HR, managers or employees from seeing modules outside their responsibility.</td></tr>
+                <tr><td>Permissions</td><td>Check sensitive permissions such as payroll, payslip, loan, deduction, PF, reports and settings.</td><td>Salary and finance data should only be visible to authorized roles.</td></tr>
+                <tr><td>Users</td><td>Create or approve login accounts only after linking an employee profile.</td><td>Login access must map to a staff identity for attendance, leave, approvals and payroll.</td></tr>
+                <tr><td>Employees</td><td>Create employee profile, link user account, assign department, designation, manager and salary grade.</td><td>This is the source for workforce scope, reporting line and employee self-service.</td></tr>
+                <tr><td>Payroll</td><td>Create salary templates, assign employee salary snapshots, configure PF, loans and deductions.</td><td>Payroll generation depends on active employee salary assignments and payroll setup.</td></tr>
+            </table>
+            <h3>User Approval Rule</h3>
+            <p>Registered users stay in <code>pending_approval</code>. Admin must create or link the employee profile first, then approve the user and assign the correct role. Approval is blocked when the user has no linked employee profile.</p>
+            <div class="warning">Do not give a user broad permissions just to make login work. Complete employee setup first, then assign the right role.</div>
         </section>
 
         <section id="login">
@@ -732,12 +770,47 @@ php artisan optimize:clear</code></pre>
                 <li>Configure carry forward and earned leave rules.</li>
                 <li>Activate/deactivate policies.</li>
             </ul>
+            <h3>Recommended Sick, Casual and Annual Leave Setup</h3>
+            <table>
+                <tr><th>Leave Type</th><th>Carry Forward</th><th>Earned Leave</th><th>Year-End Behavior</th></tr>
+                <tr><td>Sick Leave</td><td>None</td><td>No</td><td>Unused sick leave expires. New year starts with only the new yearly sick leave allocation.</td></tr>
+                <tr><td>Casual Leave</td><td>None</td><td>No</td><td>Unused casual leave expires. New year starts with only the new yearly casual leave allocation.</td></tr>
+                <tr><td>Annual Leave</td><td>Full or Limited</td><td>Yes</td><td>Unused earned annual leave carries into the next year and is added to the new annual leave allocation.</td></tr>
+            </table>
+            <h3>Earned and Carry Forward Rules</h3>
+            <ul>
+                <li><strong>Sick Leave:</strong> use yearly allocation, <strong>Carry Forward Mode = None</strong>, <strong>Earned Leave = No</strong>, <strong>Earned Credit Days = 0</strong>.</li>
+                <li><strong>Casual Leave:</strong> use yearly allocation, <strong>Carry Forward Mode = None</strong>, <strong>Earned Leave = No</strong>, <strong>Earned Credit Days = 0</strong>.</li>
+                <li><strong>Annual Leave:</strong> use yearly allocation, <strong>Carry Forward Mode = Full</strong> or <strong>Limited</strong>, <strong>Earned Leave = Yes</strong>, <strong>Earned Credit Frequency = Monthly</strong>.</li>
+                <li>For monthly earned annual leave, set <strong>Earned Credit Days</strong> to yearly annual leave allocation divided by 12. Example: 14 annual days / 12 = 1.17 days per month.</li>
+                <li>At year start, sick and casual leave balances reset to the new year allocation. Only annual leave receives carry-forward balance.</li>
+            </ul>
+            <h3>Year-End Example</h3>
+            <table>
+                <tr><th>Leave Type</th><th>Yearly Allocation</th><th>Used</th><th>Unused</th><th>Next Year Opening</th></tr>
+                <tr><td>Sick Leave</td><td>10</td><td>4</td><td>6</td><td>10. Unused 6 expires.</td></tr>
+                <tr><td>Casual Leave</td><td>10</td><td>7</td><td>3</td><td>10. Unused 3 expires.</td></tr>
+                <tr><td>Annual Leave</td><td>14</td><td>8</td><td>6</td><td>20 if carry forward is full: 14 new + 6 carried.</td></tr>
+            </table>
             <h3>Leave Balances</h3>
             <ul>
                 <li>Sync leave balances by year.</li>
                 <li>Filter balances by employee, grade or leave category.</li>
                 <li>Adjust leave balances where permitted.</li>
             </ul>
+            <h3>Automatic Monthly Leave Balance Sync</h3>
+            <p>The system includes a scheduled leave balance sync command. It recalculates the current year leave balance for active employees, including monthly earned leave credits, so HR does not need to press the Sync button every month.</p>
+            <ul>
+                <li>Scheduled command: <code>php artisan leave:sync-balances</code>.</li>
+                <li>Default schedule: last day of every month at 23:50 server time.</li>
+                <li>The sync is safe to rerun because balances are recalculated and updated for the year; it does not blindly add the same monthly earned leave again.</li>
+                <li>Manual full-year sync: <code>php artisan leave:sync-balances 2026</code>.</li>
+                <li>Manual sync for one salary grade: <code>php artisan leave:sync-balances 2026 --salary_grade_id=3</code>.</li>
+                <li>Manual sync for one employee: <code>php artisan leave:sync-balances 2026 --employee_id=25</code>.</li>
+            </ul>
+            <p>Add this cron entry on the server so Laravel can run scheduled jobs:</p>
+            <pre><code>* * * * * cd /Applications/XAMPP/xamppfiles/htdocs/hr-payroll &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code></pre>
+            <p>If the project path is different on production, replace the path with the production project directory.</p>
             <h3>Leave Applications and Approvals</h3>
             <ol>
                 <li>Employee submits leave application.</li>
@@ -1225,6 +1298,84 @@ Net Payable = Gross - Total Deduction</code></pre>
                 <tr><td>Employee</td><td>Own profile, own attendance, own leave, own tasks/projects, own payslips, own loans, own deductions and own PF.</td><td>Any global payroll, loan, deduction or report permission.</td></tr>
                 <tr><td>Auditor</td><td>Read-only report permissions only when company policy allows salary auditing.</td><td>Create, update, delete, generate or final approval permissions.</td></tr>
             </table>
+            <h3>Role-Based Permission Matrix</h3>
+            <p>Use this matrix as a practical starting point when creating or reviewing roles. The default seed already assigns similar permissions, but every company should adjust sensitive payroll, finance and settings access based on internal policy.</p>
+            <table>
+                <tr><th>Role</th><th>Should Receive</th><th>Should Avoid</th></tr>
+                <tr>
+                    <td>Super Admin</td>
+                    <td>All permissions. Reserved for system owner or technical administrator.</td>
+                    <td>Do not assign to normal HR, finance or department users.</td>
+                </tr>
+                <tr>
+                    <td>Admin</td>
+                    <td><code>settings.*</code>, <code>role.*</code>, <code>employee.*</code>, <code>department.*</code>, <code>designation.*</code>, <code>dashboard.*</code>, <code>report.*</code>, all setup permissions and full user approval access.</td>
+                    <td>Avoid for daily employees. Admin is full system access.</td>
+                </tr>
+                <tr>
+                    <td>HR Admin / HR Manager</td>
+                    <td><code>employee.view</code>, <code>employee.create</code>, <code>employee.update</code>, <code>employee.status-view</code>, <code>employee.status-update</code>, profile update review/approval permissions, <code>attendance.view</code>, <code>attendance.manage</code>, <code>leave.*</code>, <code>holiday.*</code>, <code>announcement.*</code>, <code>department.view</code>, <code>designation.view</code>, <code>report.employee</code>, <code>report.attendance</code>, <code>report.leave</code>.</td>
+                    <td><code>payroll.generate</code>, <code>payroll_run.approve</code>, <code>payroll.report</code>, <code>payslip.export</code>, loan/deduction/PF management unless HR is responsible for payroll finance.</td>
+                </tr>
+                <tr>
+                    <td>Payroll Manager</td>
+                    <td><code>payroll.view</code>, <code>payroll.generate</code>, <code>payroll.report</code>, <code>payroll_run.view</code>, <code>payroll_run.generate</code>, <code>payroll_run.approve</code>, <code>payroll_run.mark-paid</code>, salary grade/template/employee salary permissions, <code>bonus.*</code>, <code>payroll.manage-loan</code>, <code>payroll.manage-deduction</code>, <code>payroll.manage-pf</code>, <code>payslip.view</code>, <code>payslip.print</code>, <code>payslip.export</code>.</td>
+                    <td><code>role.assign</code>, <code>settings.update</code>, broad HR employee delete permissions unless payroll user is also admin.</td>
+                </tr>
+                <tr>
+                    <td>Finance Manager</td>
+                    <td><code>payroll.report</code>, <code>report.payroll</code>, <code>payslip.view</code>, <code>payslip.print</code>, <code>payslip.export</code>, <code>payroll_run.mark-paid</code>, <code>loan.view</code>, <code>employee_loan.view</code>, <code>deduction.view</code>, <code>employee_deduction.view</code>, <code>provident_fund.view</code>, <code>provident_fund.report</code>, <code>report.export</code>, finance/billing/expense permissions when enabled.</td>
+                    <td><code>employee.create</code>, <code>employee.update</code>, <code>role.assign</code>, <code>settings.update</code>, <code>payroll.generate</code> and <code>payroll_run.approve</code> unless finance processes payroll.</td>
+                </tr>
+                <tr>
+                    <td>Department Head</td>
+                    <td>Employee self-service permissions, <code>dashboard.view-department</code>, <code>dashboard.employee-summary</code>, <code>employee.view</code>, <code>employee.view-profile</code>, <code>employee.view-hierarchy</code>, <code>attendance.view</code>, <code>attendance.report</code>, <code>leave.approve</code>, <code>leave.report</code>, <code>report.attendance</code>, <code>report.leave</code>, <code>loan.approve-supervisor</code> if loan workflow requires manager approval.</td>
+                    <td>Global payroll, salary assignment, payslip export, loan final approval, PF management, role/settings permissions.</td>
+                </tr>
+                <tr>
+                    <td>Supervisor</td>
+                    <td>Employee self-service permissions, direct subordinate visibility, <code>employee.view-profile</code>, <code>attendance.approve-time-change</code>, <code>leave.approve</code>, <code>task.view</code>, <code>task.assign</code>, <code>task.comment</code>, <code>loan.approve-supervisor</code> when enabled.</td>
+                    <td>Department-wide HR administration, payroll reports, salary setup, user/role/settings access.</td>
+                </tr>
+                <tr>
+                    <td>Project Manager / Team Lead</td>
+                    <td><code>project.view</code>, <code>project.create</code>, <code>project.update</code>, <code>project.manage-members</code>, <code>team.view</code>, <code>team.update</code>, <code>team.manage-members</code>, <code>task.view</code>, <code>task.create</code>, <code>task.update</code>, <code>task.assign</code>, <code>task.comment</code>, file view/upload/preview/comment permissions.</td>
+                    <td>HR employee administration, payroll, salary, loan/deduction/PF finance permissions.</td>
+                </tr>
+                <tr>
+                    <td>Executive / Managing Director</td>
+                    <td>Usually a custom read/report role: <code>dashboard.view</code>, <code>dashboard.view-all</code>, <code>employee.view</code>, <code>department.view</code>, <code>designation.view</code>, <code>attendance.report</code>, <code>leave.report</code>, <code>payroll.report</code>, <code>report.payroll</code>, <code>provident_fund.report</code>, <code>report.view</code>, <code>report.export</code>, <code>audit.view</code>.</td>
+                    <td>Operational permissions like <code>employee.delete</code>, <code>role.assign</code>, <code>settings.update</code>, <code>payroll.generate</code>, <code>payroll_run.approve</code> unless the executive actively operates the system.</td>
+                </tr>
+                <tr>
+                    <td>Auditor</td>
+                    <td>Read-only access: <code>report.view</code>, <code>report.employee</code>, <code>report.attendance</code>, <code>report.leave</code>, <code>report.payroll</code>, <code>report.export</code>, <code>audit.view</code>, plus view-only module permissions allowed by company policy.</td>
+                    <td>Create, update, delete, approve, generate, final submit, mark-paid and settings permissions.</td>
+                </tr>
+                <tr>
+                    <td>Employee</td>
+                    <td><code>dashboard.view</code>, <code>dashboard.view-self</code>, own profile/profile update permissions, <code>attendance.clock</code>, <code>attendance.view</code>, <code>leave.apply</code>, <code>leave.view</code>, <code>payslip.view</code>, <code>loan.apply</code>, <code>employee_loan.view-own</code>, <code>employee_loan.apply</code>, <code>employee_deduction.view</code>, <code>provident_fund.view</code>, own task/project/team visibility.</td>
+                    <td>Any global payroll, HR admin, role, settings, report export, salary setup, loan final approval, deduction management or PF management permissions.</td>
+                </tr>
+            </table>
+            <h3>Permission Assignment Rules</h3>
+            <ul>
+                <li>Assign one primary job role per user where possible. Do not add <strong>Employee</strong> role to HR Admin, Payroll Manager or Department Head if their role already includes self-service permissions.</li>
+                <li>Every staff login should be linked to an employee profile before approval, including HR Admin, Department Head, CEO/Managing Director and Payroll users.</li>
+                <li>Give payroll and payslip report permissions deliberately. Generic report access should not automatically mean salary access.</li>
+                <li>Use <code>role.assign</code> only for trusted administrators who can change user access.</li>
+                <li>Use <code>settings.update</code> only for users allowed to change company-wide configuration.</li>
+                <li>Use <code>payroll_run.approve</code> only for the person authorized to final submit payroll.</li>
+            </ul>
+            <h3>User Approval and Employee Setup</h3>
+            <ol>
+                <li>New registered users remain in <code>pending_approval</code>.</li>
+                <li>Admin must create or link the employee profile before approval.</li>
+                <li>The employee profile stores staff identity, department, designation, reporting line, attendance scope, leave scope and payroll identity.</li>
+                <li>After employee setup is complete, admin can approve the user and assign the correct role such as Employee, HR Admin, Department Head or Payroll Manager.</li>
+                <li>Approval is blocked when no employee profile is linked to the user.</li>
+            </ol>
+            <div class="warning">Do not approve a normal staff user only by assigning permissions. User account, employee profile and role assignment must all be complete before login access is activated.</div>
             <h3>Role-Based Operation Guide</h3>
             <p>This guide explains what each common role should normally do in the system. The final behavior still depends on the permissions assigned to the role from the database.</p>
             <table>

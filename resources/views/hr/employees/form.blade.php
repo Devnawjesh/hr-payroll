@@ -61,7 +61,7 @@
                                 <label>{{ __('User Account (optional)') }}</label>
                                 <select name="user_id" class="form-control">
                                     <option value="">{{ __('No linked user') }}</option>
-                                    @php($selectedUser = old('user_id', $employee->user_id ?? null))
+                                    @php($selectedUser = old('user_id', $employee->user_id ?? request('user_id')))
                                     @foreach($users as $user)
                                         <option value="{{ $user->id }}" {{ (string)$selectedUser === (string)$user->id ? 'selected' : '' }}>{{ $user->name }} ({{ $user->email }})</option>
                                     @endforeach

@@ -18,8 +18,7 @@ class AdminUserSeeder extends Seeder
     {
         $this->call(PermissionSeeder::class);
 
-        $roles = $this->seedDefaultRoles();
-        $this->syncDefaultRolePermissions($roles);
+        $roles = $this->seedDefaultRolesAndPermissions();
 
         $adminRole = $roles['admin'];
         $email = env('DEFAULT_ADMIN_EMAIL', 'admin@zerihr.local');
@@ -55,7 +54,18 @@ class AdminUserSeeder extends Seeder
     /**
      * @return array<string, Role>
      */
-    private function seedDefaultRoles(): array
+    public function seedDefaultRolesAndPermissions(): array
+    {
+        $roles = $this->seedDefaultRoles();
+        $this->syncDefaultRolePermissions($roles);
+
+        return $roles;
+    }
+
+    /**
+     * @return array<string, Role>
+     */
+    public function seedDefaultRoles(): array
     {
         $roles = [];
 
@@ -76,7 +86,7 @@ class AdminUserSeeder extends Seeder
     /**
      * @param array<string, Role> $roles
      */
-    private function syncDefaultRolePermissions(array $roles): void
+    public function syncDefaultRolePermissions(array $roles): void
     {
         $permissions = Permission::query()
             ->get(['id', 'slug', 'group_name'])

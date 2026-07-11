@@ -17,6 +17,22 @@
                         {{ $user->email }} | {{ $user->phone ?: '-' }}
                     </div>
 
+                    @if($user->employee)
+                        <div class="alert alert-success">
+                            {{ __('Employee profile linked:') }}
+                            <strong>{{ trim($user->employee->first_name.' '.$user->employee->last_name) }}</strong>
+                            <small class="text-muted">({{ $user->employee->employee_code }})</small>
+                        </div>
+                    @else
+                        <div class="alert alert-warning">
+                            <strong>{{ __('Employee setup required before approval.') }}</strong>
+                            <div>{{ __('Create an employee profile and link this user account before assigning roles and approving access.') }}</div>
+                            <a href="{{ route('employees.create', ['user_id' => $user->id]) }}" class="btn btn-custom btn-sm mt-2">
+                                <i class="icon-user"></i> {{ __('Create Employee Profile') }}
+                            </a>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('users.approval.process', $user) }}">
                         @csrf
 

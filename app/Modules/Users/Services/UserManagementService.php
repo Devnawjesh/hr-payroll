@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class UserManagementService
 {
@@ -94,6 +95,12 @@ class UserManagementService
         return DB::transaction(function () use ($user, $payload, $actorId): User {
             $status = $payload['account_status'] ?? $user->account_status;
 
+            if ($status === 'active' && $user->account_status !== 'active' && $user->employee()->doesntExist()) {
+                throw ValidationException::withMessages([
+                    'account_status' => __('Create and link an employee profile before activating this user.'),
+                ]);
+            }
+
             $attributes = [
                 'name' => $payload['name'],
                 'email' => $payload['email'],
@@ -135,6 +142,12 @@ class UserManagementService
             
             // Update user status based on decision
             if ($decision === 'approve') {
+                if ($user->employee()->doesntExist()) {
+                    throw ValidationException::withMessages([
+                        'decision' => __('Create and link an employee profile before approving this user.'),
+                    ]);
+                }
+
                 $this->userRepository->update($user, [
                     'account_status' => 'active',
                     'approved_by' => $actorId,
