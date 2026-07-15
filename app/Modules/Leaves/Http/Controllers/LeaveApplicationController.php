@@ -3,6 +3,7 @@
 namespace App\Modules\Leaves\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\EmployeeLeaveBalance;
 use App\Models\LeaveApplication;
 use App\Models\LeaveCategory;
@@ -285,18 +286,7 @@ class LeaveApplicationController extends Controller
     {
         $user = $request->user();
         $hasAllAccess = $this->hasAllAccess($user);
-
-        $scopeIds = null;
-        if (! $hasAllAccess) {
-            $employeeId = (int) ($user->employee?->id ?? 0);
-            if ($user->hasPermission('leave.approve')) {
-                $scopeIds = $this->scopedOwnAndSubordinateIds($user);
-            } elseif ($employeeId > 0) {
-                $scopeIds = [$employeeId];
-            } else {
-                $scopeIds = [];
-            }
-        }
+        $scopeIds = $hasAllAccess ? null : $this->reportScopedEmployeeIds($user);
 
         $filters = [
             'status' => (string) $request->input('status', ''),
@@ -308,8 +298,9 @@ class LeaveApplicationController extends Controller
         ];
 
         if ($scopeIds !== null && $filters['employee_id'] > 0 && ! in_array($filters['employee_id'], $scopeIds, true)) {
-        $filters['employee_id'] = 0;
+            $filters['employee_id'] = 0;
         }
+
         $applications = $this->buildReportQuery($filters, $scopeIds)
             ->paginate($filters['per_page'])
             ->withQueryString();
@@ -327,18 +318,7 @@ class LeaveApplicationController extends Controller
     {
         $user = $request->user();
         $hasAllAccess = $this->hasAllAccess($user);
-
-        $scopeIds = null;
-        if (! $hasAllAccess) {
-            $employeeId = (int) ($user->employee?->id ?? 0);
-            if ($user->hasPermission('leave.approve')) {
-                $scopeIds = $this->scopedOwnAndSubordinateIds($user);
-            } elseif ($employeeId > 0) {
-                $scopeIds = [$employeeId];
-            } else {
-                $scopeIds = [];
-            }
-        }
+        $scopeIds = $hasAllAccess ? null : $this->reportScopedEmployeeIds($user);
 
         $filters = [
             'status' => (string) $request->input('status', ''),
@@ -407,7 +387,7 @@ class LeaveApplicationController extends Controller
     {
         $employee = $user->employee;
         if (! $employee) {
-        return [];
+            return [];
         }
         return $employee->subordinates()->pluck('id')->all();
     }
@@ -420,14 +400,45 @@ class LeaveApplicationController extends Controller
     {
         $employee = $user->employee;
         if (! $employee) {
-        return [];
+            return [];
         }
+
         return array_values(array_unique(array_merge([(int) $employee->id], $this->subordinateEmployeeIds($user))));
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function reportScopedEmployeeIds(User $user): array
+    {
+        $employee = $user->employee;
+        if (! $employee) {
+            return [];
+        }
+
+        if ($user->hasPermission('dashboard.view-department') && (int) $employee->department_id > 0) {
+            return Employee::query()
+                ->where('department_id', (int) $employee->department_id)
+                ->pluck('id')
+                ->map(fn ($id): int => (int) $id)
+                ->all();
+        }
+
+        if ($user->hasPermission('leave.approve')) {
+            return $this->scopedOwnAndSubordinateIds($user);
+        }
+
+        return [(int) $employee->id];
     }
 
     private function hasAllAccess(User $user): bool
     {
-        return $user->hasAnyPermission(['leave.report', 'leave.manage-balances', 'leave.manage-quotas']);
+        return $user->hasAnyPermission([
+            'dashboard.view-all',
+            'leave.manage-balances',
+            'leave.manage-quotas',
+            'leave.manage-categories',
+        ]);
     }
 
     /**
@@ -482,7 +493,7 @@ class LeaveApplicationController extends Controller
      */
     private function filterableEmployees(?array $scopeEmployeeIds): \Illuminate\Database\Eloquent\Collection
     {
-        return \App\Models\Employee::query()
+        return Employee::query()
             ->select(['id', 'employee_code', 'first_name', 'last_name'])
             ->when($scopeEmployeeIds !== null, fn ($q) => $q->whereIn('id', $scopeEmployeeIds))
             ->orderBy('first_name')

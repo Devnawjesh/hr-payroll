@@ -32,4 +32,17 @@ class EmployeeAssetService
             File::delete(public_path($path));
         }
     }
+
+    public function storeDocument(?UploadedFile $file): ?string
+    {
+        if ($file === null || ! $file->isValid()) {
+            return null;
+        }
+
+        $extension = Str::lower($file->getClientOriginalExtension());
+        $filename = 'employee_document_'.time().'_'.Str::random(8).'.'.$extension;
+        $path = $file->storeAs('employee-documents', $filename, 'public');
+
+        return $path ? 'storage/'.$path : null;
+    }
 }

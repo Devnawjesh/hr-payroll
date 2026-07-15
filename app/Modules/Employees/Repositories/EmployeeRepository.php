@@ -107,6 +107,10 @@ class EmployeeRepository
             'manager:id,employee_code,first_name,last_name',
             'subordinates:id,employee_code,first_name,last_name,reports_to_id',
             'user:id,name,email',
+            'addresses',
+            'bankAccounts',
+            'emergencyContacts',
+            'documents',
         ]);
 
         return $employee;

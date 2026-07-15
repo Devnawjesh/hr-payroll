@@ -3,6 +3,10 @@
 namespace App\Modules\Employees\Services;
 
 use App\Models\Employee;
+use App\Models\EmployeeAddress;
+use App\Models\EmployeeBankAccount;
+use App\Models\EmployeeDocument;
+use App\Models\EmployeeEmergencyContact;
 use App\Models\SystemSetting;
 use App\Modules\Employees\Repositories\EmployeeRepository;
 use Illuminate\Http\UploadedFile;
@@ -29,7 +33,10 @@ class EmployeeService
                 $attributes['employee_code'] = $payload['employee_code'] ?: $this->generateEmployeeCode();
                 $attributes['avatar_path'] = $newAvatarPath;
 
-                return $this->employeeRepository->create($attributes);
+                $employee = $this->employeeRepository->create($attributes);
+                $this->syncRelatedDetails($employee, $payload);
+
+                return $employee;
             });
         } catch (\Throwable $exception) {
             if ($newAvatarPath !== null) {
@@ -60,6 +67,7 @@ class EmployeeService
                 }
 
                 $this->employeeRepository->update($employee, $attributes);
+                $this->syncRelatedDetails($employee, $payload);
 
                 return $employee->fresh() ?? $employee;
             });
@@ -98,7 +106,7 @@ class EmployeeService
             'first_name' => $payload['first_name'],
             'last_name' => $payload['last_name'] ?? null,
             'gender' => $payload['gender'] ?? null,
-            'date_of_birth' => $payload['date_of_birth'] ?? null,
+            'date_of_birth' => $this->normalizeMonthDayDate($payload['date_of_birth'] ?? null),
             'blood_group' => $payload['blood_group'] ?? null,
             'nid_number' => $payload['nid_number'] ?? null,
             'passport_number' => $payload['passport_number'] ?? null,
@@ -108,6 +116,7 @@ class EmployeeService
             'work_email' => $payload['work_email'] ?? null,
             'personal_email' => $payload['personal_email'] ?? null,
             'marital_status' => $payload['marital_status'] ?? null,
+            'marriage_date' => $payload['marriage_date'] ?? null,
             'date_of_joining' => $payload['date_of_joining'],
             'probation_end_date' => $payload['probation_end_date'] ?? null,
             'termination_date' => $payload['termination_date'] ?? null,
@@ -119,6 +128,105 @@ class EmployeeService
             'reports_to_id' => $payload['reports_to_id'] ?? null,
             'notes' => $payload['notes'] ?? null,
         ];
+    }
+
+    private function normalizeMonthDayDate(?string $value): ?string
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return null;
+        }
+
+        return '2000-'.$value;
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function syncRelatedDetails(Employee $employee, array $payload): void
+    {
+        $addresses = $this->sanitizeRows($payload['addresses'] ?? []);
+        $banks = $this->sanitizeRows($payload['bank_accounts'] ?? []);
+        $contacts = $this->sanitizeRows($payload['emergency_contacts'] ?? []);
+        $documents = $this->sanitizeRows($payload['documents'] ?? []);
+
+        EmployeeAddress::query()->where('employee_id', $employee->id)->delete();
+        foreach ($addresses as $row) {
+            EmployeeAddress::query()->create([
+                'employee_id' => $employee->id,
+                'address_type' => $row['address_type'] ?? 'present',
+                'line_1' => $row['line_1'] ?? '',
+                'line_2' => $row['line_2'] ?? null,
+                'city' => $row['city'] ?? null,
+                'state' => $row['state'] ?? null,
+                'postal_code' => $row['postal_code'] ?? null,
+                'country' => $row['country'] ?? null,
+                'is_primary' => (bool) ($row['is_primary'] ?? false),
+            ]);
+        }
+
+        EmployeeBankAccount::query()->where('employee_id', $employee->id)->delete();
+        foreach ($banks as $row) {
+            EmployeeBankAccount::query()->create([
+                'employee_id' => $employee->id,
+                'bank_name' => $row['bank_name'] ?? '',
+                'branch_name' => $row['branch_name'] ?? null,
+                'account_holder_name' => $row['account_holder_name'] ?? '',
+                'account_number' => $row['account_number'] ?? '',
+                'routing_number' => $row['routing_number'] ?? null,
+                'account_type' => $row['account_type'] ?? null,
+                'is_primary' => (bool) ($row['is_primary'] ?? false),
+            ]);
+        }
+
+        EmployeeEmergencyContact::query()->where('employee_id', $employee->id)->delete();
+        foreach ($contacts as $row) {
+            EmployeeEmergencyContact::query()->create([
+                'employee_id' => $employee->id,
+                'name' => $row['name'] ?? '',
+                'relationship' => $row['relationship'] ?? null,
+                'phone' => $row['phone'] ?? '',
+                'email' => $row['email'] ?? null,
+                'address' => $row['address'] ?? null,
+                'is_primary' => (bool) ($row['is_primary'] ?? false),
+            ]);
+        }
+
+        EmployeeDocument::query()->where('employee_id', $employee->id)->delete();
+        foreach ($documents as $row) {
+            $storedDocumentPath = $this->employeeAssetService->storeDocument($row['file'] ?? null);
+
+            EmployeeDocument::query()->create([
+                'employee_id' => $employee->id,
+                'document_type' => $row['document_type'] ?? '',
+                'title' => $row['title'] ?? '',
+                'file_path' => $storedDocumentPath ?? ($row['file_path'] ?? ''),
+                'issued_date' => $row['issued_date'] ?? null,
+                'expiry_date' => $row['expiry_date'] ?? null,
+                'uploaded_by' => auth()->id(),
+            ]);
+        }
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $rows
+     * @return array<int, array<string, mixed>>
+     */
+    private function sanitizeRows(array $rows): array
+    {
+        return array_values(array_filter($rows, function ($row): bool {
+            if (! is_array($row)) {
+                return false;
+            }
+
+            foreach ($row as $value) {
+                if ($value !== null && $value !== '' && $value !== false) {
+                    return true;
+                }
+            }
+
+            return false;
+        }));
     }
 
     private function generateEmployeeCode(): string

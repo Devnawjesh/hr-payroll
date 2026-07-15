@@ -64,7 +64,7 @@ class StoreEmployeeProfileUpdateRequest extends FormRequest
             'documents' => ['nullable', 'array'],
             'documents.*.document_type' => ['nullable', 'string', 'max:60'],
             'documents.*.title' => ['nullable', 'string', 'max:255'],
-            'documents.*.file_path' => ['nullable', 'string', 'max:255'],
+            'documents.*.file_path' => ['nullable', 'string', 'max:2048'],
             'documents.*.issued_date' => ['nullable', 'date'],
             'documents.*.expiry_date' => ['nullable', 'date'],
         ];

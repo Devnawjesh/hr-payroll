@@ -101,7 +101,7 @@ class EmployeeController extends Controller
 
         return view('hr.employees.form', [
              'mode' => 'edit',
-             'employee' => $employee,
+             'employee' => $employee->load(['addresses', 'bankAccounts', 'emergencyContacts', 'documents']),
              'departments' => $this->employeeRepository->listDepartments(request()->user()),
             'designations' => $this->employeeRepository->listDesignations(request()->user()),
             'salaryGrades' => $this->employeeRepository->listSalaryGrades(),
