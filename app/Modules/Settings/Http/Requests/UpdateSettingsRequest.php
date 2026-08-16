@@ -47,8 +47,9 @@ class UpdateSettingsRequest extends FormRequest
             'mail_from_address' => ['nullable', 'email', 'max:180'],
             'mail_from_name' => ['nullable', 'string', 'max:180'],
 
-            'company_logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,svg,webp', 'max:4096'],
-            'company_favicon' => ['nullable', 'file', 'mimes:png,ico,jpg,jpeg,svg,webp', 'max:2048'],
+            'company_logo' => ['nullable','file','mimes:png,jpg,jpeg,webp','mimetypes:image/png,image/jpeg,image/webp','max:4096'],
+
+            'company_favicon' => ['nullable','file','mimes:png,jpg,jpeg,webp,ico','max:2048'],
         ];
     }
 }
