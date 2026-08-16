@@ -31,7 +31,7 @@
                         @php($pendingPayload = is_array($lastPending?->payload) ? $lastPending->payload : [])
                         @php($pendingGeneral = is_array($pendingPayload['general_info'] ?? null) ? $pendingPayload['general_info'] : [])
                         @php($addresses = old('addresses', $pendingPayload['addresses'] ?? $employee->addresses->map->only(['address_type','line_1','line_2','city','state','postal_code','country','is_primary'])->toArray()))
-                        @php($banks = old('bank_accounts', $pendingPayload['bank_accounts'] ?? $employee->bankAccounts->map->only(['bank_name','branch_name','account_holder_name','account_number','routing_number','account_type','is_primary'])->toArray()))
+                        @php($banks = old('bank_accounts', $pendingPayload['bank_accounts'] ?? $employee->bankAccounts->map->only(['bank_name','branch_name','account_holder_name','account_number','routing_number','account_type','is_primary','is_salary_account','salary_account_start_date','salary_account_end_date'])->toArray()))
                         
                         @php($contacts = old('emergency_contacts', $pendingPayload['emergency_contacts'] ?? $employee->emergencyContacts->map->only(['name','relationship','phone','email','address','is_primary'])->toArray()))
                         @php($documents = old('documents', $pendingPayload['documents'] ?? $employee->documents->map->only(['document_type','title','file_path','issued_date','expiry_date'])->toArray()))
@@ -299,14 +299,17 @@
                     <div class="col-md-1"><button type="button" class="btn btn-custom-default btn-sm profile-row-remove" data-remove-row><i class="icon-trash"></i></button></div>
                     <div class="col-md-2"><input name="bank_accounts[${i}][routing_number]" class="form-control" placeholder="{{ __('Routing') }}" value="${escapeHtml(row.routing_number)}"></div>
                     <div class="col-md-2"><input name="bank_accounts[${i}][account_type]" class="form-control" placeholder="{{ __('Type') }}" value="${escapeHtml(row.account_type)}"></div>
-                    <div class="col-md-3 d-flex align-items-center">
-                        <div class="checkbox checkbox-default mb-0">
-                            <input id="banks_primary_${i}" type="checkbox" name="bank_accounts[${i}][is_primary]" value="1" ${boolChecked(row.is_primary)}>
-                            <label for="banks_primary_${i}">{{ __('Primary') }}</label>
+                        <div class="col-md-3 d-flex align-items-center">
+                            <div class="checkbox checkbox-default mb-0">
+                                <input id="banks_primary_${i}" type="checkbox" name="bank_accounts[${i}][is_primary]" value="1" ${boolChecked(row.is_primary)}>
+                                <label for="banks_primary_${i}">{{ __('Primary') }}</label>
+                            </div>
                         </div>
+                    <input type="hidden" name="bank_accounts[${i}][is_salary_account]" value="${boolChecked(row.is_salary_account) ? '1' : ''}">
+                    <input type="hidden" name="bank_accounts[${i}][salary_account_start_date]" value="${escapeHtml(row.salary_account_start_date)}">
+                    <input type="hidden" name="bank_accounts[${i}][salary_account_end_date]" value="${escapeHtml(row.salary_account_end_date)}">
                     </div>
-                </div>
-            </div>`;
+                </div>`;
         }
 
         if (type === 'contacts') {

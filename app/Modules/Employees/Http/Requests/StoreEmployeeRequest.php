@@ -4,6 +4,7 @@ namespace App\Modules\Employees\Http\Requests;
 
 use App\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 use Illuminate\Validation\Rule;
 
 class StoreEmployeeRequest extends FormRequest
@@ -68,6 +69,9 @@ class StoreEmployeeRequest extends FormRequest
             'bank_accounts.*.routing_number' => ['nullable', 'string', 'max:255'],
             'bank_accounts.*.account_type' => ['nullable', 'string', 'max:30'],
             'bank_accounts.*.is_primary' => ['nullable', 'boolean'],
+            'bank_accounts.*.is_salary_account' => ['nullable', 'boolean'],
+            'bank_accounts.*.salary_account_start_date' => ['nullable', 'date'],
+            'bank_accounts.*.salary_account_end_date' => ['nullable', 'date'],
 
             'emergency_contacts' => ['nullable', 'array'],
             'emergency_contacts.*.name' => ['nullable', 'string', 'max:255'],
@@ -85,5 +89,25 @@ class StoreEmployeeRequest extends FormRequest
             'documents.*.issued_date' => ['nullable', 'date'],
             'documents.*.expiry_date' => ['nullable', 'date'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $salaryAccounts = collect($this->input('bank_accounts', []))
+                ->filter(fn ($row) => is_array($row) && ! empty($row['is_salary_account']));
+
+            if ($salaryAccounts->count() > 1) {
+                $validator->errors()->add('bank_accounts', __('Only one salary account can be selected.'));
+            }
+
+            foreach ($salaryAccounts as $index => $row) {
+                foreach (['bank_name', 'account_holder_name', 'account_number', 'salary_account_start_date'] as $field) {
+                    if (blank($row[$field] ?? null)) {
+                        $validator->errors()->add("bank_accounts.{$index}.{$field}", __('Salary account requires bank name, account holder, account number, and record entry date.'));
+                    }
+                }
+            }
+        });
     }
 }

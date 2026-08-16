@@ -226,6 +226,9 @@ class EmployeeProfileUpdateRequestService
                 'routing_number' => $row['routing_number'] ?? null,
                 'account_type' => $row['account_type'] ?? null,
                 'is_primary' => (bool) ($row['is_primary'] ?? false),
+                'is_salary_account' => (bool) ($row['is_salary_account'] ?? false),
+                'salary_account_start_date' => $row['salary_account_start_date'] ?? null,
+                'salary_account_end_date' => $row['salary_account_end_date'] ?? null,
             ]);
         }
 

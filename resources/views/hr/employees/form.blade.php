@@ -17,7 +17,7 @@
                         @if($mode === 'edit') @method('PUT') @endif
                         @php($employeeModel = $employee ?? null)
                         @php($addresses = old('addresses', $employeeModel?->addresses?->map->only(['address_type','line_1','line_2','city','state','postal_code','country','is_primary'])->toArray() ?? []))
-                        @php($banks = old('bank_accounts', $employeeModel?->bankAccounts?->map->only(['bank_name','branch_name','account_holder_name','account_number','routing_number','account_type','is_primary'])->toArray() ?? []))
+                        @php($banks = old('bank_accounts', $employeeModel?->bankAccounts?->map->only(['bank_name','branch_name','account_holder_name','account_number','routing_number','account_type','is_primary','is_salary_account','salary_account_start_date','salary_account_end_date'])->toArray() ?? []))
                         @php($contacts = old('emergency_contacts', $employeeModel?->emergencyContacts?->map->only(['name','relationship','phone','email','address','is_primary'])->toArray() ?? []))
                         @php($documents = old('documents', $employeeModel?->documents?->map->only(['document_type','title','file_path','issued_date','expiry_date'])->toArray() ?? []))
                         @php($dateOfBirthValue = old('date_of_birth', !empty($employee->date_of_birth ?? null) ? \Illuminate\Support\Carbon::parse($employee->date_of_birth)->format('m-d') : ''))
@@ -538,6 +538,14 @@
             return (value === true || value === 1 || value === '1') ? 'checked' : '';
         }
 
+        function todayDateString() {
+            var today = new Date();
+            var month = String(today.getMonth() + 1).padStart(2, '0');
+            var day = String(today.getDate()).padStart(2, '0');
+
+            return today.getFullYear() + '-' + month + '-' + day;
+        }
+
         function rowHtml(type, i, row) {
             row = row || {};
 
@@ -572,12 +580,20 @@
                         <div class="col-md-1"><button type="button" class="btn btn-custom-default btn-sm profile-row-remove" data-remove-row><i class="icon-trash"></i></button></div>
                         <div class="col-md-2"><input name="bank_accounts[${i}][routing_number]" class="form-control" placeholder="{{ __('Routing') }}" value="${escapeHtml(row.routing_number)}"></div>
                         <div class="col-md-2"><input name="bank_accounts[${i}][account_type]" class="form-control" placeholder="{{ __('Type') }}" value="${escapeHtml(row.account_type)}"></div>
-                        <div class="col-md-3 d-flex align-items-center">
+                        <div class="col-md-2 d-flex align-items-center">
                             <div class="checkbox checkbox-default mb-0">
                                 <input id="banks_primary_${i}" type="checkbox" name="bank_accounts[${i}][is_primary]" value="1" ${boolChecked(row.is_primary)}>
                                 <label for="banks_primary_${i}">{{ __('Primary') }}</label>
                             </div>
                         </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                            <div class="checkbox checkbox-default mb-0">
+                                <input id="banks_salary_${i}" type="checkbox" name="bank_accounts[${i}][is_salary_account]" value="1" data-salary-account ${boolChecked(row.is_salary_account)}>
+                                <label for="banks_salary_${i}">{{ __('Salary Account') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3"><input name="bank_accounts[${i}][salary_account_start_date]" class="form-control datetimepicker" placeholder="{{ __('Record entry date') }}" value="${escapeHtml(row.salary_account_start_date)}"></div>
+                        <div class="col-md-3"><input name="bank_accounts[${i}][salary_account_end_date]" class="form-control datetimepicker" placeholder="{{ __('End date') }}" value="${escapeHtml(row.salary_account_end_date)}"></div>
                     </div>
                 </div>`;
             }
@@ -671,6 +687,23 @@
             if (Array.isArray(data[dataKey]) && index > -1) {
                 data[dataKey].splice(index, 1);
                 render(type);
+            }
+        });
+
+        document.addEventListener('change', function (event) {
+            var salaryCheckbox = event.target.closest('[data-salary-account]');
+            if (!salaryCheckbox || !salaryCheckbox.checked) return;
+
+            document.querySelectorAll('[data-salary-account]').forEach(function (checkbox) {
+                if (checkbox !== salaryCheckbox) {
+                    checkbox.checked = false;
+                }
+            });
+
+            var row = salaryCheckbox.closest('[data-row]');
+            var startDateInput = row ? row.querySelector('input[name*="[salary_account_start_date]"]') : null;
+            if (startDateInput && !startDateInput.value) {
+                startDateInput.value = todayDateString();
             }
         });
 

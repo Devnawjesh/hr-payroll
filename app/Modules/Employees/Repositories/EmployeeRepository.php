@@ -111,6 +111,7 @@ class EmployeeRepository
             'bankAccounts',
             'emergencyContacts',
             'documents',
+            'salaryAccountHistories' => fn ($query) => $query->with('changedBy:id,name')->latest('started_at')->latest('id'),
         ]);
 
         return $employee;

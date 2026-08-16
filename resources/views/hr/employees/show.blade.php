@@ -70,6 +70,9 @@
                                     <th>{{ __('Account No') }}</th>
                                     <th>{{ __('Routing') }}</th>
                                     <th>{{ __('Type') }}</th>
+                                    <th>{{ __('Salary Account') }}</th>
+                                    <th>{{ __('Entry Date') }}</th>
+                                    <th>{{ __('End Date') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -81,9 +84,42 @@
                                         <td>{{ $bank->account_number ?: '-' }}</td>
                                         <td>{{ $bank->routing_number ?: '-' }}</td>
                                         <td>{{ $bank->account_type ?: '-' }}</td>
+                                        <td>{{ $bank->is_salary_account ? __('Yes') : __('No') }}</td>
+                                        <td>{{ $bank->salary_account_start_date ?: '-' }}</td>
+                                        <td>{{ $bank->salary_account_end_date ?: '-' }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="6" class="text-muted">{{ __('No bank accounts added.') }}</td></tr>
+                                    <tr><td colspan="9" class="text-muted">{{ __('No bank accounts added.') }}</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h5 class="mt-3">{{ __('Salary Account History') }}</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-2">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Bank') }}</th>
+                                    <th>{{ __('Account Holder') }}</th>
+                                    <th>{{ __('Account No') }}</th>
+                                    <th>{{ __('Record Entry Date') }}</th>
+                                    <th>{{ __('End Date') }}</th>
+                                    <th>{{ __('Changed By') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($employee->salaryAccountHistories as $history)
+                                    <tr>
+                                        <td>{{ $history->bank_name ?: '-' }}</td>
+                                        <td>{{ $history->account_holder_name ?: '-' }}</td>
+                                        <td>{{ $history->account_number ?: '-' }}</td>
+                                        <td>{{ $history->started_at ?: '-' }}</td>
+                                        <td>{{ $history->ended_at ?: '-' }}</td>
+                                        <td>{{ $history->changedBy?->name ?: '-' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="6" class="text-muted">{{ __('No salary account history added.') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

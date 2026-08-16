@@ -52,6 +52,9 @@ class StoreEmployeeProfileUpdateRequest extends FormRequest
             'bank_accounts.*.routing_number' => ['nullable', 'string', 'max:255'],
             'bank_accounts.*.account_type' => ['nullable', 'string', 'max:30'],
             'bank_accounts.*.is_primary' => ['nullable', 'boolean'],
+            'bank_accounts.*.is_salary_account' => ['nullable', 'boolean'],
+            'bank_accounts.*.salary_account_start_date' => ['nullable', 'date'],
+            'bank_accounts.*.salary_account_end_date' => ['nullable', 'date'],
 
             'emergency_contacts' => ['nullable', 'array'],
             'emergency_contacts.*.name' => ['nullable', 'string', 'max:255'],

@@ -100,6 +100,11 @@ class Employee extends Model
         return $this->hasMany(EmployeeBankAccount::class);
     }
 
+    public function salaryAccountHistories(): HasMany
+    {
+        return $this->hasMany(EmployeeSalaryAccountHistory::class);
+    }
+
     public function emergencyContacts(): HasMany
     {
         return $this->hasMany(EmployeeEmergencyContact::class);

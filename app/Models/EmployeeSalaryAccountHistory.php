@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class EmployeeBankAccount extends Model
+class EmployeeSalaryAccountHistory extends Model
 {
     use HasFactory;
 
@@ -18,8 +17,13 @@ class EmployeeBankAccount extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    public function salaryAccountHistories(): HasMany
+    public function bankAccount(): BelongsTo
     {
-        return $this->hasMany(EmployeeSalaryAccountHistory::class);
+        return $this->belongsTo(EmployeeBankAccount::class, 'employee_bank_account_id');
+    }
+
+    public function changedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'changed_by');
     }
 }

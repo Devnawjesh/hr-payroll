@@ -7,8 +7,10 @@ use App\Models\EmployeeAddress;
 use App\Models\EmployeeBankAccount;
 use App\Models\EmployeeDocument;
 use App\Models\EmployeeEmergencyContact;
+use App\Models\EmployeeSalaryAccountHistory;
 use App\Models\SystemSetting;
 use App\Modules\Employees\Repositories\EmployeeRepository;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
@@ -149,6 +151,39 @@ class EmployeeService
         $banks = $this->sanitizeRows($payload['bank_accounts'] ?? []);
         $contacts = $this->sanitizeRows($payload['emergency_contacts'] ?? []);
         $documents = $this->sanitizeRows($payload['documents'] ?? []);
+        $previousSalaryAccount = EmployeeBankAccount::query()
+            ->where('employee_id', $employee->id)
+            ->where('is_salary_account', true)
+            ->first();
+        $activeSalaryHistory = EmployeeSalaryAccountHistory::query()
+            ->where('employee_id', $employee->id)
+            ->whereNull('ended_at')
+            ->latest('started_at')
+            ->latest('id')
+            ->first();
+        $previousSalaryEndDate = null;
+        if ($previousSalaryAccount) {
+            $previousSalarySubmittedRow = collect($banks)
+                ->first(function ($row) use ($previousSalaryAccount): bool {
+                    if (! is_array($row)) {
+                        return false;
+                    }
+
+                    return $this->salaryAccountKey($row) === $this->salaryAccountKey($previousSalaryAccount->toArray());
+                });
+            $previousSalaryEndDate = is_array($previousSalarySubmittedRow)
+                ? ($previousSalarySubmittedRow['salary_account_end_date'] ?? null)
+                : null;
+        }
+        $salaryRow = collect($banks)->first(fn ($row): bool => ! empty($row['is_salary_account']) && empty($row['salary_account_end_date']));
+        $previousSalaryKey = $previousSalaryAccount ? $this->salaryAccountKey($previousSalaryAccount->toArray()) : null;
+        $newSalaryKey = is_array($salaryRow) ? $this->salaryAccountKey($salaryRow) : null;
+        $salaryAccountChanged = $previousSalaryKey !== null && $newSalaryKey !== null && $previousSalaryKey !== $newSalaryKey;
+        $salaryAccountRemoved = $previousSalaryKey !== null && $newSalaryKey === null;
+
+        if (($salaryAccountChanged || $salaryAccountRemoved) && $activeSalaryHistory) {
+            $activeSalaryHistory->update(['ended_at' => $previousSalaryEndDate ?: Carbon::today()->toDateString()]);
+        }
 
         EmployeeAddress::query()->where('employee_id', $employee->id)->delete();
         foreach ($addresses as $row) {
@@ -167,7 +202,13 @@ class EmployeeService
 
         EmployeeBankAccount::query()->where('employee_id', $employee->id)->delete();
         foreach ($banks as $row) {
-            EmployeeBankAccount::query()->create([
+            $salaryEndDate = $row['salary_account_end_date'] ?? null;
+            $isSalaryAccount = ! empty($row['is_salary_account']) && empty($salaryEndDate);
+            $salaryStartDate = $isSalaryAccount
+                ? ($row['salary_account_start_date'] ?? $previousSalaryAccount?->salary_account_start_date ?? $activeSalaryHistory?->started_at ?? Carbon::today()->toDateString())
+                : null;
+
+            $bankAccount = EmployeeBankAccount::query()->create([
                 'employee_id' => $employee->id,
                 'bank_name' => $row['bank_name'] ?? '',
                 'branch_name' => $row['branch_name'] ?? null,
@@ -176,7 +217,21 @@ class EmployeeService
                 'routing_number' => $row['routing_number'] ?? null,
                 'account_type' => $row['account_type'] ?? null,
                 'is_primary' => (bool) ($row['is_primary'] ?? false),
+                'is_salary_account' => $isSalaryAccount,
+                'salary_account_start_date' => $row['salary_account_start_date'] ?? $salaryStartDate,
+                'salary_account_end_date' => $salaryEndDate,
             ]);
+
+            if ($isSalaryAccount) {
+                $this->syncSalaryAccountHistory(
+                    $employee,
+                    $bankAccount,
+                    $activeSalaryHistory,
+                    $previousSalaryKey,
+                    $newSalaryKey,
+                    $salaryStartDate
+                );
+            }
         }
 
         EmployeeEmergencyContact::query()->where('employee_id', $employee->id)->delete();
@@ -206,6 +261,52 @@ class EmployeeService
                 'uploaded_by' => auth()->id(),
             ]);
         }
+    }
+
+    private function syncSalaryAccountHistory(
+        Employee $employee,
+        EmployeeBankAccount $bankAccount,
+        ?EmployeeSalaryAccountHistory $activeSalaryHistory,
+        ?string $previousSalaryKey,
+        ?string $newSalaryKey,
+        string $salaryStartDate
+    ): void {
+        if ($activeSalaryHistory && $previousSalaryKey !== null && $previousSalaryKey === $newSalaryKey && $activeSalaryHistory->ended_at === null) {
+            $activeSalaryHistory->update([
+                'employee_bank_account_id' => $bankAccount->id,
+                'bank_name' => $bankAccount->bank_name,
+                'branch_name' => $bankAccount->branch_name,
+                'account_holder_name' => $bankAccount->account_holder_name,
+                'account_number' => $bankAccount->account_number,
+                'routing_number' => $bankAccount->routing_number,
+                'account_type' => $bankAccount->account_type,
+                'started_at' => $salaryStartDate,
+                'changed_by' => auth()->id(),
+            ]);
+
+            return;
+        }
+
+        EmployeeSalaryAccountHistory::query()->create([
+            'employee_id' => $employee->id,
+            'employee_bank_account_id' => $bankAccount->id,
+            'bank_name' => $bankAccount->bank_name,
+            'branch_name' => $bankAccount->branch_name,
+            'account_holder_name' => $bankAccount->account_holder_name,
+            'account_number' => $bankAccount->account_number,
+            'routing_number' => $bankAccount->routing_number,
+            'account_type' => $bankAccount->account_type,
+            'started_at' => $salaryStartDate,
+            'changed_by' => auth()->id(),
+        ]);
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function salaryAccountKey(array $row): string
+    {
+        return strtolower(trim((string) ($row['bank_name'] ?? '')).'|'.trim((string) ($row['account_number'] ?? '')));
     }
 
     /**
