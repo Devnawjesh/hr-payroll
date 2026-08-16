@@ -111,7 +111,7 @@ class ProjectRepository
 
     private function canViewAll(?User $user): bool
     {
-        return $user?->hasAnyPermission(['project.create', 'project.delete', 'project.manage-members']) ?? false;
+        return $user?->hasPermission('project.view-all') ?? false;
     }
 
     private function scopeToUser($query, ?User $user): void

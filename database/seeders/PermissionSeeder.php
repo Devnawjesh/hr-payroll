@@ -76,9 +76,9 @@ class PermissionSeeder extends Seeder
             'training' => ['view', 'create', 'update', 'delete'],
             'award' => ['view', 'create', 'update', 'delete'],
             'announcement' => ['view', 'create', 'publish', 'approve'],
-            'project' => ['view', 'create', 'update', 'delete', 'manage_members'],
-            'team' => ['view', 'create', 'update', 'delete', 'manage_members'],
-            'task' => ['view', 'create', 'update', 'delete', 'assign', 'comment'],
+            'project' => ['view', 'view_all', 'create', 'update', 'delete', 'manage_members'],
+            'team' => ['view', 'view_all', 'create', 'update', 'delete', 'manage_members'],
+            'task' => ['view', 'view_all', 'create', 'update', 'delete', 'assign', 'comment'],
             'note' => ['view_private', 'create_private', 'update_private', 'delete_private'],
             'file' => ['view', 'upload', 'preview', 'comment', 'delete'],
             'client' => ['view', 'create', 'update', 'delete'],
@@ -154,7 +154,7 @@ class PermissionSeeder extends Seeder
             'report',
             'notification',
         ], true)
-            || in_array($action, ['create', 'update', 'delete', 'approve', 'approve_final', 'reject', 'publish', 'manage', 'generate', 'generate_batch', 'mark_paid', 'post_transaction', 'adjust', 'record_payment', 'send', 'export', 'import', 'api_integration', 'final_approve', 'status_update', 'promotion_manage', 'rejoin_manage'], true)) {
+            || in_array($action, ['view_all', 'create', 'update', 'delete', 'approve', 'approve_final', 'reject', 'publish', 'manage', 'generate', 'generate_batch', 'mark_paid', 'post_transaction', 'adjust', 'record_payment', 'send', 'export', 'import', 'api_integration', 'final_approve', 'status_update', 'promotion_manage', 'rejoin_manage'], true)) {
             $scope = 'admin';
         }
 

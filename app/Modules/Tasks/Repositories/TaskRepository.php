@@ -103,7 +103,7 @@ class TaskRepository
 
     private function canViewAll(?User $user): bool
     {
-        return $user?->hasAnyPermission(['task.delete', 'task.assign']) ?? false;
+        return $user?->hasPermission('task.view-all') ?? false;
     }
 
     private function scopeToUser($query, ?User $user): void

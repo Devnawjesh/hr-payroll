@@ -99,7 +99,7 @@ class TeamRepository
 
     private function canViewAll(?User $user): bool
     {
-        return $user?->hasAnyPermission(['team.create', 'team.delete', 'team.manage-members']) ?? false;
+        return $user?->hasPermission('team.view-all') ?? false;
     }
 
     private function scopeToUser($query, ?User $user): void
