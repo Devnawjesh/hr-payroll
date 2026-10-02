@@ -7,6 +7,7 @@ use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\SalaryGrade;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
@@ -34,7 +35,7 @@ class EmployeeRepository
                 'manager:id,employee_code,first_name,last_name',
                 'user:id,name,email',
             ])
-            ->when($user !== null && ! $this->canViewAll($user), fn ($query) => $this->scopeToUser($query, $user))
+            ->tap(fn (Builder $query) => $this->scopeVisibleToUser($query, $user))
             ->when($q !== '', function ($query) use ($q): void {
                 $query->where(function ($inner) use ($q): void {
                     $inner
@@ -53,6 +54,19 @@ class EmployeeRepository
             ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
+    }
+
+    public function visibleQuery(?User $user = null): Builder
+    {
+        return Employee::query()
+            ->tap(fn (Builder $query) => $this->scopeVisibleToUser($query, $user));
+    }
+
+    public function scopeVisibleToUser(Builder $query, ?User $user = null): void
+    {
+        if ($user !== null && ! $this->canViewAll($user)) {
+            $this->scopeToUser($query, $user);
+        }
     }
 
     public function canAccess(Employee $employee, ?User $user): bool

@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\PayrollItem;
 use App\Models\ProvidentFundTransaction;
 use App\Models\User;
+use App\Modules\Employees\Repositories\EmployeeRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +17,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
+    public function __construct(private readonly EmployeeRepository $employees)
+    {
+    }
+
     public function index(): View
     {
         return view('hr.reports.index');
@@ -26,22 +31,17 @@ class ReportController extends Controller
         $filters = $this->employeeFilters($request);
 
         return view('hr.reports.employees', [
-            'employees' => $this->employeeQuery($filters)->paginate($filters['per_page'])->withQueryString(),
-            'departments' => $this->departmentsForSelect(),
+            'employees' => $this->employeeQuery($filters, $request->user())->paginate($filters['per_page'])->withQueryString(),
+            'departments' => $this->employees->listDepartments($request->user()),
             'filters' => $filters,
-            'summary' => [
-                'total' => Employee::query()->count(),
-                'active' => Employee::query()->where('employment_status', 'active')->count(),
-                'inactive' => Employee::query()->where('employment_status', 'inactive')->count(),
-                'terminated' => Employee::query()->whereIn('employment_status', ['resigned', 'terminated'])->count(),
-            ],
+            'summary' => $this->employeeSummary($request->user()),
         ]);
     }
 
     public function exportEmployees(Request $request): StreamedResponse
     {
         $filters = $this->employeeFilters($request, false);
-        $rows = $this->employeeQuery($filters)->get();
+        $rows = $this->employeeQuery($filters, $request->user())->get();
 
         return $this->csv('employee_report.csv', [
             'Employee Code',
@@ -257,11 +257,11 @@ class ReportController extends Controller
      * @param array<string, mixed> $filters
      * @return Builder<Employee>
      */
-    private function employeeQuery(array $filters): Builder
+    private function employeeQuery(array $filters, ?User $user = null): Builder
     {
         $q = (string) $filters['q'];
 
-        return Employee::query()
+        return $this->employees->visibleQuery($user)
             ->with(['department:id,name', 'designation:id,name', 'salaryGrade:id,grade_name'])
             ->when($q !== '', fn (Builder $query) => $query->where(function ($inner) use ($q): void {
                 $inner->where('employee_code', 'like', "%{$q}%")
@@ -274,6 +274,21 @@ class ReportController extends Controller
             ->when((string) $filters['status'] !== '', fn (Builder $query) => $query->where('employment_status', $filters['status']))
             ->orderBy('first_name')
             ->orderBy('last_name');
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function employeeSummary(?User $user = null): array
+    {
+        $query = $this->employees->visibleQuery($user);
+
+        return [
+            'total' => (clone $query)->count(),
+            'active' => (clone $query)->where('employment_status', 'active')->count(),
+            'inactive' => (clone $query)->where('employment_status', 'inactive')->count(),
+            'terminated' => (clone $query)->whereIn('employment_status', ['resigned', 'terminated'])->count(),
+        ];
     }
 
     /**
