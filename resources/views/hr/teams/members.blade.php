@@ -83,14 +83,17 @@
         return wrapper.querySelectorAll('.team-member-row').length;
     }
 
-    function employeeOptions() {
-        if (!Array.isArray(employees) || employees.length === 0) {
-            return '<option value="">{{ __('Select Employee') }}</option>';
+    function populateEmployeeSelect(select) {
+        select.appendChild(new Option(@json(__('Select Employee')), ''));
+
+        if (!Array.isArray(employees)) {
+            return;
         }
 
-        return '<option value="">{{ __('Select Employee') }}</option>' + employees.map(function (employee) {
-            return '<option value="' + employee.id + '">' + employee.name + ' (' + employee.code + ') - ' + employee.department + '</option>';
-        }).join('');
+        employees.forEach(function (employee) {
+            var label = String(employee.name || '') + ' (' + String(employee.code || '') + ') - ' + String(employee.department || '');
+            select.appendChild(new Option(label, String(employee.id || '')));
+        });
     }
 
     addBtn.addEventListener('click', function () {
@@ -98,13 +101,14 @@
         var row = document.createElement('div');
         row.className = 'row g-2 align-items-end team-member-row';
         row.innerHTML = `
-            <div class="col-md-4"><label>{{ __('Employee') }}</label><select name="members[${i}][employee_id]" class="form-control js-example-basic-single" required>${employeeOptions()}</select></div>
+            <div class="col-md-4"><label>{{ __('Employee') }}</label><select name="members[${i}][employee_id]" class="form-control js-example-basic-single" required></select></div>
             <div class="col-md-2"><label>{{ __('Role') }}</label><select name="members[${i}][member_role]" class="form-control" required><option value="lead">{{ __('Lead') }}</option><option value="member" selected>{{ __('Member') }}</option><option value="observer">{{ __('Observer') }}</option></select></div>
             <div class="col-md-2"><label>{{ __('Joined') }}</label><input type="text" name="members[${i}][joined_on]" class="form-control team-date-picker" placeholder="YYYY-MM-DD"></div>
             <div class="col-md-2"><label>{{ __('Left') }}</label><input type="text" name="members[${i}][left_on]" class="form-control team-date-picker" placeholder="YYYY-MM-DD"></div>
             <div class="col-md-1"><label>{{ __('Active') }}</label><select name="members[${i}][is_active]" class="form-control"><option value="1" selected>{{ __('Yes') }}</option><option value="0">{{ __('No') }}</option></select></div>
             <div class="col-md-1"><button type="button" class="btn btn-custom-default btn-sm remove-team-member"><i class="icon-trash"></i></button></div>
         `;
+        populateEmployeeSelect(row.querySelector('select[name$="[employee_id]"]'));
         wrapper.appendChild(row);
         setupDatePickers(row);
         setupSelect2(row);
