@@ -35,8 +35,8 @@
 
                     <hr>
 
-                    <div class="announcement-body">
-                        {!! $announcement->body !!}
+                    <div class="announcement-body" style="white-space: pre-wrap;">
+                        {{ $announcement->body }}
                     </div>
 
                     @if($announcement->audience_type === 'employees')
